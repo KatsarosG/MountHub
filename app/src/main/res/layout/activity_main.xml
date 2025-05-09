@@ -60,7 +60,7 @@
             app:icon="@drawable/ic_notifications_black_24dp" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/profile_btn"
             android:layout_width="60dp"
             android:layout_height="match_parent"
             android:layout_margin="3dp"

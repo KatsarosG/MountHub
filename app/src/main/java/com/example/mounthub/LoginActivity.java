@@ -1,6 +1,7 @@
 package com.example.mounthub;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,20 +27,21 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onRegisterActivityClick(View view) {
+//        Log.d("Login", "Register button clicked");
         Intent intentObj = new Intent(this, RegisterActivity.class);
         startActivity(intentObj);
     }
 
     public void onSignInClick(View view) {
 //        Log.d("Login", "Login button clicked");
-        Log.d("Login", "Login button clicked");
+//        Log.d("Login", "Login button clicked");
 
         String username = this.username.getText().toString();
         String password = this.password.getText().toString();
 
         // for testing uncomment this
-        // username = "test";
-        // password = "test";
+        username = "test";
+        password = "test";
 
         // validation
         if (username.isEmpty()) {
@@ -67,7 +69,13 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        // save user in session
+        UserSessionManager userSessionManager = new UserSessionManager(LoginActivity.this);
+        userSessionManager.saveUser(user);
+
+        // go to main activity
         Intent intentObj = new Intent(this, MainActivity.class);
         startActivity(intentObj);
+        finish();
     }
 }

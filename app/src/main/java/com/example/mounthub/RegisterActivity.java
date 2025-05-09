@@ -26,15 +26,24 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void onRegisterClick(View view) {
+        User user;
         try  {
-            User user = new User(-1, username.getText().toString(), email.getText().toString(), password.getText().toString(), info.getText().toString());
+            user = new User(-1, username.getText().toString(), email.getText().toString(), password.getText().toString(), info.getText().toString());
             DatabaseManager databaseManager = new DatabaseManager(RegisterActivity.this);
             databaseManager.addUser(user);
         } catch (Exception e) {
             Log.d("Register", "Error: " + e.getMessage());
+            return;
         }
 
+
+        // save user in session
+        UserSessionManager userSessionManager = new UserSessionManager(RegisterActivity.this);
+        userSessionManager.saveUser(user);
+
+        // go to main activity
         Intent intentObj = new Intent(this, MainActivity.class);
         startActivity(intentObj);
+        finish();
     }
 }
