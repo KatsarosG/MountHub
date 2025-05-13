@@ -3,6 +3,7 @@ package com.example.mounthub;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class DatabaseManager extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "mounthubDB.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     // users table
     public static final String TABLE_USERS = "users";
@@ -25,8 +26,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_USERS + " (" +
                     COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    COLUMN_USER_USERNAME + " TEXT," +
-                    COLUMN_USER_EMAIL + " TEXT," +
+                    COLUMN_USER_USERNAME + " TEXT UNIQUE NOT NULL," +
+                    COLUMN_USER_EMAIL + " TEXT UNIQUE NOT NULL," +
                     COLUMN_USER_PASSWORD + " TEXT," +
                     COLUMN_USER_INFO + " TEXT)";
 
@@ -52,11 +53,11 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // db.execSQL(SQL_DELETE_ENTRIES);
-        // onCreate(db);
+         db.execSQL(SQL_DELETE_ENTRIES);
+         onCreate(db);
     }
 
-    public boolean addUser(User user) {
+    public long addUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
@@ -67,12 +68,30 @@ public class DatabaseManager extends SQLiteOpenHelper {
         cv.put(COLUMN_USER_PASSWORD, user.getPassword());
         cv.put(COLUMN_USER_INFO, user.getInfo());
 
-        long success = db.insert(TABLE_USERS, null, cv);
+        long userId;
+        try {
+            userId = db.insertOrThrow(TABLE_USERS, null, cv);
+        } catch (SQLiteConstraintException e) {
+            if (e.getMessage().contains("UNIQUE constraint failed: users.username")) {
+                // Username already exists
+                return -1;
+            }
+
+            if (e.getMessage().contains("UNIQUE constraint failed: users.email")) {
+                // Email already exists
+                return -2;
+            }
+
+            Log.e("Database Error", "Error inserting user: " + e.getMessage());
+            return 0;
+        } finally {
+            db.close();
+        }
 
         // clean
         db.close();
 
-        return success != -1;
+        return userId;
     }
 
     public boolean deleteUser(User user) {

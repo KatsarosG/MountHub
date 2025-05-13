@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class LoginActivity extends AppCompatActivity {
     Button btnRegister, btnSignIn;
     EditText username, password;
+    TextView errorMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
         btnSignIn = findViewById(R.id.login);
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
+        errorMsg = findViewById(R.id.error_message);
     }
 
     public void onRegisterActivityClick(View view) {
@@ -40,32 +43,43 @@ public class LoginActivity extends AppCompatActivity {
         String password = this.password.getText().toString();
 
         // for testing uncomment this
-        username = "test";
-        password = "test";
+//        username = "test";
+//        password = "test";
 
         // validation
+        boolean hasErrors = false;
+
+        // clear previous messages
+        errorMsg.setText("");
+
         if (username.isEmpty()) {
-            Toast.makeText(this, "Username is empty", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (password.isEmpty()) {
-            Toast.makeText(this, "Password is empty", Toast.LENGTH_SHORT).show();
-            return;
+            errorMsg.append("Username is empty\n");
+            hasErrors = true;
         }
 
+        if (password.isEmpty()) {
+            errorMsg.append("Password is empty\n");
+            hasErrors = true;
+        }
+
+        if (hasErrors) {
+            return; // Don't proceed with login if there are empty fields
+        }
+
+        // user search
         DatabaseManager databaseManager = new DatabaseManager(LoginActivity.this);
         User user = databaseManager.fetchUser(username);
 
         // user not found
         if (user == null) {
-            Toast.makeText(this, "User not found. Ensure username is right.", Toast.LENGTH_SHORT).show();
+            errorMsg.append("User not found. Ensure username is right");
             return;
         }
 
         // password is incorrect
-        Log.d("Login", "Password: " + user.getPassword());
+//        Log.d("Login", "Password: " + user.getPassword());
         if (!user.getPassword().equals(password)) {
-            Toast.makeText(this, "Incorrect password.", Toast.LENGTH_SHORT).show();
+            errorMsg.append("Incorrect password");
             return;
         }
 
