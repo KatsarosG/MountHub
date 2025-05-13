@@ -16,10 +16,23 @@ public class LoginActivity extends AppCompatActivity {
     Button btnRegister, btnSignIn;
     EditText username, password;
     TextView errorMsg;
+    UserSessionManager userSessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // check if user is already logged in
+        userSessionManager = new UserSessionManager(LoginActivity.this);
+        User user = userSessionManager.getCurrentUser();
+
+        if (user != null) {
+            // go to map
+            Intent intentObj = new Intent(this, MainActivity.class);
+            startActivity(intentObj);
+            finish();
+        }
+
         setContentView(R.layout.activity_login);
 
         btnRegister = findViewById(R.id.register_activity);
@@ -84,7 +97,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // save user in session
-        UserSessionManager userSessionManager = new UserSessionManager(LoginActivity.this);
         userSessionManager.saveUser(user);
 
         // go to main activity
