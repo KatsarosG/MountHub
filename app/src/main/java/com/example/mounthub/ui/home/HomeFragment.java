@@ -1,4 +1,6 @@
 package com.example.mounthub.ui.home;
+import com.example.mounthub.Coordinate;
+import com.example.mounthub.DatabaseManager;
 import com.example.mounthub.R;
 
 import android.Manifest;
@@ -8,28 +10,38 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import org.osmdroid.config.Configuration;
+import org.osmdroid.events.MapListener;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-public class HomeFragment extends Fragment {
+import java.util.ArrayList;
+import java.util.List;
 
+public class HomeFragment extends Fragment implements MapListener {
+
+    private static final double ZOOM_BOUND = 16.15;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private MapView mapView;
     private MyLocationNewOverlay locationOverlay;
+    private final List<Marker> allMarkers = new ArrayList<>();
+    DatabaseManager databaseManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,6 +60,9 @@ public class HomeFragment extends Fragment {
         setInitialMapView();
 
         requestPermissionsIfNecessary();
+
+        // databaseManager init
+        databaseManager = new DatabaseManager(requireContext());
 
         return root;
     }
@@ -119,14 +134,64 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mapView != null) mapView.onResume();
+        if (mapView != null) {
+            mapView.onResume();
+            mapView.addMapListener(this); // Re-add listener on resume
+        }
         if (locationOverlay != null) locationOverlay.enableMyLocation();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mapView != null) mapView.onPause();
+        if (mapView != null) {
+            mapView.onPause();
+            mapView.removeMapListener(this); // Remove listener on pause
+        }
         if (locationOverlay != null) locationOverlay.disableMyLocation();
+    }
+
+    // MapListener methods
+    @Override
+    public boolean onScroll(ScrollEvent event) {
+        //TODO(opt): implement
+        return false;
+    }
+
+    @Override
+    public boolean onZoom(ZoomEvent event) {
+//        Log.d("MapUpdate", "Map zoomed. New zoom level: " + event.getZoomLevel());
+//        Log.d("MapUpdate", "Map center after zoom: " + mapCenter.getLatitude() + ", " + mapCenter.getLongitude());
+//        Log.d("MapUpdate", "Map zoomed. New zoom level: " + event.getZoomLevel());
+        GeoPoint mapCenter = (GeoPoint) mapView.getMapCenter();
+
+        // clear previous markers
+        for (Marker marker : allMarkers) {
+            mapView.getOverlays().remove(marker);
+        }
+
+        double zoomLevel = event.getZoomLevel();
+
+        if (zoomLevel >= ZOOM_BOUND) {
+//            Log.d("MapUpdate", "Map zoomed. New zoom level: " + event.getZoomLevel());
+            List<Coordinate> points = databaseManager.fetchMarkersNearLocation((float) mapCenter.getLatitude(), (float) mapCenter.getLongitude());
+
+            // load points on map
+            for (Coordinate point : points) {
+                Marker marker = new Marker(mapView);
+                marker.setPosition(new GeoPoint(point.getLatitude(), point.getLongitude()));
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+                // add markers to map view
+                mapView.getOverlays().add(marker);
+
+                // add marker to list
+                allMarkers.add(marker);
+            }
+
+            mapView.invalidate();
+        }
+
+        return false;
     }
 }
