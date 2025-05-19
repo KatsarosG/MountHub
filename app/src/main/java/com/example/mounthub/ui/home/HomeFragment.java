@@ -2,8 +2,11 @@ package com.example.mounthub.ui.home;
 import com.example.mounthub.Coordinate;
 import com.example.mounthub.DatabaseManager;
 import com.example.mounthub.R;
+import com.example.mounthub.TrailActionsPopup;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -42,6 +45,7 @@ public class HomeFragment extends Fragment implements MapListener {
     private MyLocationNewOverlay locationOverlay;
     private final List<Marker> allMarkers = new ArrayList<>();
     DatabaseManager databaseManager;
+    boolean displayingPins = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -165,33 +169,51 @@ public class HomeFragment extends Fragment implements MapListener {
 //        Log.d("MapUpdate", "Map zoomed. New zoom level: " + event.getZoomLevel());
         GeoPoint mapCenter = (GeoPoint) mapView.getMapCenter();
 
-        // clear previous markers
-        for (Marker marker : allMarkers) {
-            mapView.getOverlays().remove(marker);
-        }
-
         double zoomLevel = event.getZoomLevel();
 
-        if (zoomLevel >= ZOOM_BOUND) {
+        // clear markers
+        if (zoomLevel < ZOOM_BOUND && displayingPins) {
+            for (Marker marker : allMarkers) {
+                mapView.getOverlays().remove(marker);
+            }
+            displayingPins = false;
+            return false;
+        }
+
+        // show markers
+        if (zoomLevel >= ZOOM_BOUND && !displayingPins) {
+            displayingPins = true;
 //            Log.d("MapUpdate", "Map zoomed. New zoom level: " + event.getZoomLevel());
             List<Coordinate> points = databaseManager.fetchMarkersNearLocation((float) mapCenter.getLatitude(), (float) mapCenter.getLongitude());
 
             // load points on map
             for (Coordinate point : points) {
-                Marker marker = new Marker(mapView);
-                marker.setPosition(new GeoPoint(point.getLatitude(), point.getLongitude()));
-                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                Marker marker = getMarker(point);
 
-                // add markers to map view
                 mapView.getOverlays().add(marker);
-
-                // add marker to list
                 allMarkers.add(marker);
             }
+
 
             mapView.invalidate();
         }
 
         return false;
+    }
+
+    @NonNull
+    private Marker getMarker(Coordinate point) {
+        Marker marker = new Marker(mapView);
+        marker.setPosition(new GeoPoint(point.getLatitude(), point.getLongitude()));
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        // Attach custom popup
+        marker.setInfoWindow(new TrailActionsPopup(mapView));
+
+        marker.setOnMarkerClickListener((m, mapView) -> {
+            m.showInfoWindow();
+            return true;
+        });
+        return marker;
     }
 }
