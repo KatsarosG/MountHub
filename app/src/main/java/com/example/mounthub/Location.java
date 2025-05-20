@@ -10,14 +10,17 @@ public class Location {
     private String description;
     private String info;
 
-    public Location(int ID,String name, String locationType) {
+    public Location(int ID,String name, Coordinate coordinates, String locationType) {
         this.ID = ID;
         this.name = name;
+        this.coordinates = coordinates;
         this.locationType = locationType;
     }
     public String getName() {
         return name;
     }
+
+    public Coordinate getCoordinates() { return coordinates; }
 
     public String getDescription(String desc){
         return description;

@@ -11,7 +11,11 @@ import android.util.Log;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.datatype.Duration;
 
 public class DatabaseManager extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "mounthubDB.db";
@@ -168,10 +172,11 @@ public class DatabaseManager extends SQLiteOpenHelper {
 //        SQLiteDatabase
 //    }
 
-    public List<Coordinate> fetchMarkersNearLocation(float lat, float lon) {
+    public Map<String, List<?>> fetchMarkersNearLocation(float lat, float lon) {
         // TODO: fetch actual locations/trails near the location
 
-//         = new ArrayList<>();
+          List<Trail>  trails = new ArrayList<>();
+          List<Location> locations = new ArrayList<>();
 //        trails.add(new Trail("Appalachian Trail",
 //                             "The Appalachian Trail is a 2,181-mile long public footpath that traverses the scenic, wooded, pastoral, wild, and culturally resonant lands of the Appalachian Mountains.",
 //                              4.5f, 500, "Difficult", 10, 2500, 34.9622f, -84.2659f));
@@ -185,17 +190,52 @@ public class DatabaseManager extends SQLiteOpenHelper {
 //                             "The Wonderland Trail is a 93-mile hiking trail that circumnavigates Mount Rainier in Mount Rainier National Park, Washington.",
 //                              4.7f, 150, "Very Difficult", 10, 2200, 46.7760f, -121.7269f));
 
-        return List.of(
-                new Coordinate(38.24630040417543, 21.734617569821097),
-                new Coordinate(38.246684768604155, 21.737499370110385),
+        trails.add(new Trail(
+            1,
+            "Appalachian Trail",
+            List.of(new Coordinate(38.24630040417543, 21.734617569821097), new Coordinate(38.24630040417543, 21.734617569821097)),
+            Trail.Difficulty.EASY,
+            "Info"
+        ));
+
+        trails.add(new Trail(
+            2,
+            "Appalachian Trail",
+            List.of(new Coordinate(38.246684768604155, 21.737499370110385), new Coordinate(38.24630040417543, 21.734617569821097)),
+            Trail.Difficulty.EASY,
+            "Info"
+        ));
+
+        locations.add(new Location(
+                1,
+                "Loc1",
                 new Coordinate(38.249519070522766, 21.736482232637087),
-                new Coordinate(38.24419048197976, 21.73351452466244)
+                "mountain"
+        ));
+
+        locations.add(new Location(
+                2,
+                "Loc1",
+                new Coordinate(38.24419048197976, 21.73351452466244),
+                "mountain"
+        ));
+
+        return Map.of(
+                "trails", trails,
+                "locations", locations
+        );
+
+//        return List.of(
+//                new Coordinate(38.24630040417543, 21.734617569821097),
+//                new Coordinate(38.246684768604155, 21.737499370110385),
+//                new Coordinate(38.249519070522766, 21.736482232637087),
+//                new Coordinate(38.24419048197976, 21.73351452466244)
 //                new Coordinate(28, 50),
 //                new Coordinate(77, 6),
 //                new Coordinate(3, 71),
 //                new Coordinate(55, 23),
 //                new Coordinate(89, 44),
 //                new Coordinate(19, 68)
-        );
+//        );
     }
 }

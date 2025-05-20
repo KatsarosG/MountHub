@@ -1,7 +1,9 @@
 package com.example.mounthub.ui.home;
 import com.example.mounthub.Coordinate;
 import com.example.mounthub.DatabaseManager;
+import com.example.mounthub.Location;
 import com.example.mounthub.R;
+import com.example.mounthub.Trail;
 import com.example.mounthub.TrailActionsPopup;
 
 import android.Manifest;
@@ -17,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
@@ -36,6 +39,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class HomeFragment extends Fragment implements MapListener {
 
@@ -184,11 +188,19 @@ public class HomeFragment extends Fragment implements MapListener {
         if (zoomLevel >= ZOOM_BOUND && !displayingPins) {
             displayingPins = true;
 //            Log.d("MapUpdate", "Map zoomed. New zoom level: " + event.getZoomLevel());
-            List<Coordinate> points = databaseManager.fetchMarkersNearLocation((float) mapCenter.getLatitude(), (float) mapCenter.getLongitude());
+            Map<String, List<?>> points = databaseManager.fetchMarkersNearLocation((float) mapCenter.getLatitude(), (float) mapCenter.getLongitude());
 
-            // load points on map
-            for (Coordinate point : points) {
-                Marker marker = getMarker(point);
+            // load trails on map
+            for (Trail trail : (List<Trail>)points.get("trails")) {
+                Marker marker = getMarker(trail.getRouteLine().get(0), 1);
+
+                mapView.getOverlays().add(marker);
+                allMarkers.add(marker);
+            }
+
+            // load locations on map
+            for (Location location : (List<Location>)points.get("locations")) {
+                Marker marker = getMarker(location.getCoordinates(), 0);
 
                 mapView.getOverlays().add(marker);
                 allMarkers.add(marker);
@@ -202,18 +214,24 @@ public class HomeFragment extends Fragment implements MapListener {
     }
 
     @NonNull
-    private Marker getMarker(Coordinate point) {
+    private Marker getMarker(Coordinate point, int type) {
         Marker marker = new Marker(mapView);
         marker.setPosition(new GeoPoint(point.getLatitude(), point.getLongitude()));
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
         // Attach custom popup
-        marker.setInfoWindow(new TrailActionsPopup(mapView));
+        if (type == 1) {
+            marker.setInfoWindow(new TrailActionsPopup(mapView));
+        } else if (type == 0) {
+            marker.setOnMarkerClickListener((marker1, mapView) -> {
+                Toast.makeText(requireContext(),
+                        "go to location page",
+                        Toast.LENGTH_SHORT).show();
 
-        marker.setOnMarkerClickListener((m, mapView) -> {
-            m.showInfoWindow();
-            return true;
-        });
+                return true;
+            });
+        }
+
         return marker;
     }
 }
