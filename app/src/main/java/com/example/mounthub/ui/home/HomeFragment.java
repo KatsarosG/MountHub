@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 
 import androidx.annotation.NonNull;
@@ -25,8 +26,14 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-public class HomeFragment extends Fragment {
+import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase;
+//import org.osmdroid.tileprovider.MapTile;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.views.MapView;
+import org.osmdroid.tileprovider.tilesource.XYTileSource;
+import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase;
 
+public class HomeFragment extends Fragment {
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private MapView mapView;
     private MyLocationNewOverlay locationOverlay;
@@ -41,22 +48,68 @@ public class HomeFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         mapView = root.findViewById(R.id.map);
-        mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setMultiTouchControls(true);
+
+        Button buttonLayers = root.findViewById(R.id.button4);
 
         // Set initial zoom level and center the map
         setInitialMapView();
 
+        mapView.setTilesScaledToDpi(true);
+
         requestPermissionsIfNecessary();
+
+        buttonLayers.setOnClickListener(v -> {
+            android.widget.PopupMenu popup = new android.widget.PopupMenu(requireContext(), v);
+            popup.getMenu().add("Default");
+            popup.getMenu().add("Satellite");
+            popup.getMenu().add("Terrain");
+
+            popup.setOnMenuItemClickListener(item -> {
+                String title = item.getTitle().toString();
+                switch (title) {
+                    case "Default":
+                        mapView.setTileSource(TileSourceFactory.MAPNIK);
+                        break;
+
+                    case "Satellite":
+                        XYTileSource satellite = new XYTileSource(
+                                "Satellite",
+                                0, 19, 256, ".png",
+                                new String[]{
+                                       "https://a.tile.opentopomap.org/"
+                                        // Δεν υπάρχει tileserver για satellite που να βολεύει αρα χρησιμοποιεί κατι άκυρο.
+                                },
+                                "Satellite View");
+                        mapView.setTileSource(satellite);
+                        break;
+
+                    case "Terrain":
+                        XYTileSource terrain = new XYTileSource(
+                                "Terrain",
+                                0, 17, 256, ".png",
+                                new String[]{
+                                        "https://a.tile-cyclosm.openstreetmap.fr/cyclosm/"
+                                },
+                                "Cyclosm");
+                        mapView.setTileSource(terrain);
+                        break;
+                }
+                mapView.invalidate(); // Refresh the map
+                return true;
+            });
+
+            popup.show();
+        });
 
         return root;
     }
 
     private void setInitialMapView() {
         // Set default center location (e.g., user's last known location or a fixed location)
-        GeoPoint defaultLocation = new GeoPoint(48.8583, 2.2944); // Eiffel Tower as an example
+        GeoPoint defaultLocation = new GeoPoint(38.548165, 22.051305);
         mapView.getController().setCenter(defaultLocation);
-        mapView.getController().setZoom(15.0); // Set the zoom level (e.g., 15.0 is a good default for street-level)
+        mapView.getController().setZoom(8.0);
 
         // Optionally, you can adjust zoom based on the user's location or other criteria
     }
