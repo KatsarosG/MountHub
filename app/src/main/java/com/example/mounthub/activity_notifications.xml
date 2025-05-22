@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NotificationsActivity"
+    android:padding="16dp">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/notifications_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Notifications"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center" />
+
+    <!-- Fake Notification List -->
+    <LinearLayout
+        android:id="@+id/notification_list"
+        android:layout_width="360dp"
+        android:layout_height="568dp"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.473"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/notifications_title"
+        app:layout_constraintVertical_bias="0.0">
+
+        <!-- Example Notification -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="• Trail A is temporarily closed for maintenance."
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="• New trail 'Rocky Ridge' has been added!"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="• Update your app to get the latest features."
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
