@@ -2,6 +2,8 @@ package com.example.mounthub.ui.home;
 import com.example.mounthub.Coordinate;
 import com.example.mounthub.DatabaseManager;
 import com.example.mounthub.Location;
+import com.example.mounthub.LocationManage;
+import com.example.mounthub.MainActivity;
 import com.example.mounthub.R;
 import com.example.mounthub.Trail;
 import com.example.mounthub.TrailActionsPopup;
@@ -9,10 +11,13 @@ import com.example.mounthub.TrailActionsPopup;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -221,12 +226,18 @@ public class HomeFragment extends Fragment implements MapListener {
 
         // Attach custom popup
         if (type == 1) {
+            GradientDrawable drawable = new GradientDrawable();
+            drawable.setShape(GradientDrawable.OVAL);
+            drawable.setColor(Color.BLUE);
+            drawable.setStroke(6, Color.WHITE); // White border
+            drawable.setSize(60, 60); // Size in pixels
+
+            marker.setIcon(drawable);
             marker.setInfoWindow(new TrailActionsPopup(mapView));
         } else if (type == 0) {
             marker.setOnMarkerClickListener((marker1, mapView) -> {
-                Toast.makeText(requireContext(),
-                        "go to location page",
-                        Toast.LENGTH_SHORT).show();
+                Intent intentObj = new Intent(requireContext(), LocationManage.class);
+                startActivity(intentObj);
 
                 return true;
             });
