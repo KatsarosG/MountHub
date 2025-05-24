@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -14,6 +15,8 @@ import androidx.core.content.ContextCompat;
 
 import com.example.mounthub.R;
 
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -30,16 +33,50 @@ public class Map {
     public String background;
     private List<Location> locationList;
     private List<Trail> trailList;
+    private final Button buttonLayers;
     public MapView mapView;
 
-    public Map(Context context, Fragment fragment, MapView mapView) {
+    public Map(Context context, Fragment fragment, MapView mapView, Button buttonLayers) {
         this.context = context;
         this.fragment = fragment;
         this.background = "Default";
         this.mapView = mapView;
         this.mapView.setMultiTouchControls(true);
         this.mapView.setTilesScaledToDpi(true);
+        this.buttonLayers = buttonLayers;
+        layerButtonSetup();
         setInitialMapView();
+    }
+
+    private void layerButtonSetup() {
+        //On Click of Layer Button:
+        buttonLayers.setOnClickListener(v -> {
+            android.widget.PopupMenu popup = new android.widget.PopupMenu(context, v);
+            popup.getMenu().add("OpenStreetMap");
+            popup.getMenu().add("OpenTopoMap");
+            popup.getMenu().add("Cyclosm");
+
+            // On Click of Layer list item:
+            popup.setOnMenuItemClickListener(item -> {
+                String title = item.getTitle().toString();
+                switch (title) {
+                    case "OpenStreetMap":
+                        selectOSM();
+                        break;
+
+                    case "OpenTopoMap":
+                        selectOTM();
+                        break;
+
+                    case "Cyclosm":
+                        selectCOSM();
+                        break;
+                }
+                mapView.invalidate(); // Refresh the map
+                return true;
+            });
+            popup.show();
+        });
     }
     private void setInitialMapView() {
         // Set default center location (e.g., user's last known location or a fixed location)
@@ -49,6 +86,7 @@ public class Map {
         requestPermissionsIfNecessary(fragment);
         // Optionally, you can adjust zoom based on the user's location or other criteria
     }
+
     private void requestPermissionsIfNecessary(Fragment fragment) {
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -76,6 +114,7 @@ public class Map {
         locationOverlay.enableFollowLocation();
         mapView.getOverlays().add(locationOverlay);
     }
+
     private Bitmap drawableToBitmap(Drawable drawable) {
         // Create a Bitmap with the same size as the drawable
         int width = drawable.getIntrinsicWidth();
@@ -88,5 +127,24 @@ public class Map {
         drawable.draw(canvas);
 
         return bitmap;
+    }
+
+    private void selectOSM() {
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
+    }
+
+    private void selectOTM() {
+        XYTileSource openTopoMap = new XYTileSource(
+                "OpenTopoMap",
+                0, 19, 256, ".png",
+                new String[]{"https://a.tile.opentopomap.org/"}, "OpenTopoMap");
+        mapView.setTileSource(openTopoMap);
+    }
+    private void selectCOSM() {
+        XYTileSource cyclosm = new XYTileSource(
+                "Cyclosm",
+                0, 17, 256, ".png",
+                new String[]{"https://a.tile-cyclosm.openstreetmap.fr/cyclosm/"}, "Cyclosm");
+        mapView.setTileSource(cyclosm);
     }
 }
