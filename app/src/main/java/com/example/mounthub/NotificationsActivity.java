@@ -1,37 +1,50 @@
 package com.example.mounthub;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NotificationsActivity extends AppCompatActivity {
 
+    private Button btnBack;
+    private ListView listViewNotifications;
+    private List<Notification> notifications;
+    private NotificationAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Button btnBack;
         super.onCreate(savedInstanceState);
-        //EdgeToEdge.enable(this);
         setContentView(R.layout.activity_notifications);
-    /*   ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
 
-            return insets;
-        }); */
         btnBack = findViewById(R.id.btnBack);
+        listViewNotifications = findViewById(R.id.listViewNotifications);
 
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
+        btnBack.setOnClickListener(view -> onBackPressed());
+
+        displayNotifications();
+    }
+
+    private void displayNotifications() {
+        DatabaseManager dbManager = new DatabaseManager(this);
+        notifications = dbManager.fetchNotifications();  // Now returns List<Notification>
+
+        adapter = new NotificationAdapter(this, notifications);
+        listViewNotifications.setAdapter(adapter);
+
+        listViewNotifications.setOnItemClickListener((adapterView, view, position, id) -> {
+            Notification notification = notifications.get(position);
+            if (!notification.isSeen()) {
+                notification.markAsSeen();
+                adapter.notifyDataSetChanged();
             }
         });
     }
+
 }
