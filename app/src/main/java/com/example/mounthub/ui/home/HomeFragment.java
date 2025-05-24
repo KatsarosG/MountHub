@@ -62,8 +62,8 @@ public class HomeFragment extends Fragment {
         buttonLayers.setOnClickListener(v -> {
             android.widget.PopupMenu popup = new android.widget.PopupMenu(requireContext(), v);
             popup.getMenu().add("Default");
-            popup.getMenu().add("Satellite");
-            popup.getMenu().add("Terrain");
+            popup.getMenu().add("OpenTopoMap");
+            popup.getMenu().add("Cyclosm");
 
             popup.setOnMenuItemClickListener(item -> {
                 String title = item.getTitle().toString();
@@ -72,21 +72,21 @@ public class HomeFragment extends Fragment {
                         mapView.setTileSource(TileSourceFactory.MAPNIK);
                         break;
 
-                    case "Satellite":
+                    case "OpenTopoMap":
                         XYTileSource satellite = new XYTileSource(
-                                "Satellite",
+                                "OpenTopoMap",
                                 0, 19, 256, ".png",
                                 new String[]{
                                        "https://a.tile.opentopomap.org/"
                                         // Δεν υπάρχει tileserver για satellite που να βολεύει αρα χρησιμοποιεί κατι άκυρο.
                                 },
-                                "Satellite View");
+                                "OpenTopoMap");
                         mapView.setTileSource(satellite);
                         break;
 
-                    case "Terrain":
+                    case "Cyclosm":
                         XYTileSource terrain = new XYTileSource(
-                                "Terrain",
+                                "Cyclosm",
                                 0, 17, 256, ".png",
                                 new String[]{
                                         "https://a.tile-cyclosm.openstreetmap.fr/cyclosm/"
