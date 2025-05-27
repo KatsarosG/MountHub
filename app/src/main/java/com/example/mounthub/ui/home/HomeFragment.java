@@ -1,6 +1,5 @@
 package com.example.mounthub.ui.home;
-import com.example.mounthub.Map;
-import com.example.mounthub.R;
+
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -8,24 +7,43 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.content.Intent;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import com.example.mounthub.Map;
+import com.example.mounthub.R;
+import com.example.mounthub.NearbyLocActivity;
+
 import org.osmdroid.config.Configuration;
 import org.osmdroid.views.MapView;
 
 public class HomeFragment extends Fragment {
-    //private MapView mapView;
+
     private Map mainMap;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        // Load osmdroid preferences
         Configuration.getInstance().load(requireContext(), PreferenceManager.getDefaultSharedPreferences(requireContext()));
+
+        // Inflate the layout
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
+        // Get views
         Button buttonLayers = root.findViewById(R.id.button4);
+        Button locationsBtn = root.findViewById(R.id.locationsnear_btn);
         MapView mapView = root.findViewById(R.id.map);
+
+        // Initialize custom Map class
         mainMap = new Map(requireContext(), this, mapView, buttonLayers);
+
+        locationsBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), NearbyLocActivity.class);
+            startActivity(intent);
+        });
+
 
         return root;
     }
