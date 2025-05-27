@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">MountHub</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
+    <string name="sign_in">sign in</string>
+    <string name="register">register</string>
+    <string name="email">email</string>
+    <string name="info">info</string>
+    <string name="logout">logout</string>
+    <string name="confirm_password">confirm password</string>
+    <string name="delete">delete</string>
+</resources>
