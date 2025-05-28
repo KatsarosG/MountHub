@@ -161,6 +161,11 @@ public class DatabaseManager extends SQLiteOpenHelper {
         return user;
     }
 
+    public int addLocation(String name, String description, String additionalInfo, Coordinate coordinate) {
+
+        return 1; // return location id
+    }
+
 //    public boolean editUser(User user) {
 //        SQLiteDatabase
 //    }

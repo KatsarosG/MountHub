@@ -1,5 +1,6 @@
 package com.example.mounthub.ui.home;
 import com.example.mounthub.AddLocationPopupWindow;
+import com.example.mounthub.AskLocInfoPopupWindow;
 import com.example.mounthub.R;
 
 import android.Manifest;
@@ -38,6 +39,7 @@ public class HomeFragment extends Fragment {
     private MyLocationNewOverlay locationOverlay;
     private Button addLocationButton;
     private boolean pinMode = false;
+    private AddLocationPopupWindow addLocationPopupWindow;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,14 +71,14 @@ public class HomeFragment extends Fragment {
         addLocationButton.setOnClickListener(v -> {
             // Create and show the AddLocationPopupWindow
             if (!pinMode) {
-                AddLocationPopupWindow addLocationPopupWindow = new AddLocationPopupWindow(requireContext());
+                addLocationPopupWindow = new AddLocationPopupWindow(requireContext());
                 addLocationPopupWindow.show();
                 pinMode = true;
             }
         });
     }
 
-    private void addPinToMap(GeoPoint geoPoint) {
+    private Marker addPinToMap(GeoPoint geoPoint) {
         // Create a new marker
         Marker marker = new Marker(mapView);
         marker.setPosition(geoPoint);
@@ -86,6 +88,8 @@ public class HomeFragment extends Fragment {
 
         // Refresh the map
         mapView.invalidate();
+
+        return marker;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -100,12 +104,17 @@ public class HomeFragment extends Fragment {
                 );
 
                 // Add a pin at the clicked location
-                addPinToMap(geoPoint);
+                Marker newLocPin = addPinToMap(geoPoint);
 
                 // Exit pin adding mode
                 pinMode = false;
 
+                // hide add location popup
+                addLocationPopupWindow.dismiss();
+
                 // Show next popup
+                AskLocInfoPopupWindow askLocInfoPopupWindow = new AskLocInfoPopupWindow(requireContext(), newLocPin);
+                askLocInfoPopupWindow.show();
 
                 return true;
             }
