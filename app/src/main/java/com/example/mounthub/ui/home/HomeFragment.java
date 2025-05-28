@@ -12,6 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.views.MapView;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
+import com.example.mounthub.Coordinate;
+
 
 public class HomeFragment extends Fragment {
     //private MapView mapView;
@@ -26,6 +31,24 @@ public class HomeFragment extends Fragment {
         Button buttonLayers = root.findViewById(R.id.button4);
         MapView mapView = root.findViewById(R.id.map);
         mainMap = new Map(requireContext(), this, mapView, buttonLayers);
+
+        mainMap.mapView.setMapListener(new org.osmdroid.events.MapListener() {
+            @Override
+            public boolean onScroll(org.osmdroid.events.ScrollEvent event) {
+                GeoPoint center = (GeoPoint) mainMap.mapView.getMapCenter();
+                Coordinate.currentLatitude = center.getLatitude();
+                Coordinate.currentLongitude = center.getLongitude();
+                return true;
+            }
+
+            @Override
+            public boolean onZoom(org.osmdroid.events.ZoomEvent event) {
+                GeoPoint center = (GeoPoint) mainMap.mapView.getMapCenter();
+                Coordinate.currentLatitude = center.getLatitude();
+                Coordinate.currentLongitude = center.getLongitude();
+                return true;
+            }
+        });
 
         return root;
     }

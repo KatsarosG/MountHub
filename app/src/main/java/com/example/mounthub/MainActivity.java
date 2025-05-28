@@ -17,10 +17,14 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.mounthub.databinding.ActivityMainBinding;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     Button profileBtn;
+    Button weatherButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
         // elements
         profileBtn = findViewById(R.id.profile_btn);
+
+        weatherButton = findViewById(R.id.weather_button);
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -47,6 +53,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        weatherButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(android.R.id.content, new WeatherFragment());
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
