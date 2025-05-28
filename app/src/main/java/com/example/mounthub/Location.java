@@ -20,6 +20,10 @@ public class Location {
         return name;
     }
 
+    public int getID() {
+        return ID;
+    }
+
     public Coordinate getCoordinates() { return coordinates; }
 
     public String getDescription(String desc){

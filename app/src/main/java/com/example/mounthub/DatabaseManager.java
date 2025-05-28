@@ -172,7 +172,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 //        SQLiteDatabase
 //    }
 
-    public Map<String, List<?>> fetchMarkersNearLocation(float lat, float lon) {
+    public Map<String, List<?>> pointsNear(float lat, float lon) {
         // TODO: fetch actual locations/trails near the location
 
           List<Trail>  trails = new ArrayList<>();
@@ -237,5 +237,9 @@ public class DatabaseManager extends SQLiteOpenHelper {
 //                new Coordinate(89, 44),
 //                new Coordinate(19, 68)
 //        );
+    }
+
+    public Location getLocationDetails(int locationId) {
+        return  new Location(1, "Loc1", new Coordinate(38.24630040417543, 21.734617569821097), "mountain");
     }
 }
