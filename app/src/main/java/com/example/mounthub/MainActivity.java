@@ -50,6 +50,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
+
     }
+    public void goToNotifScreen(View v){
+        Intent i = new Intent(this, NotificationsActivity.class);
+        startActivity(i);
+    }
+
+
+
 
 }

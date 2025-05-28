@@ -10,6 +10,9 @@ import android.util.Log;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseManager extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "mounthubDB.db";
     private static final int DATABASE_VERSION = 3;
@@ -21,6 +24,12 @@ public class DatabaseManager extends SQLiteOpenHelper {
     public static final String COLUMN_USER_EMAIL = "email";
     public static final String COLUMN_USER_PASSWORD = "password";
     public static final String COLUMN_USER_INFO = "info";
+
+    // notifications table
+    public static final String TABLE_NOTIFICATIONS = "notifications";
+    public static final String COLUMN_NOTIFICATION_ID = "id";
+    public static final String COLUMN_NOTIFICATION_MESSAGE = "message";
+
 
     // SQL statement to create your table
     private static final String SQL_CREATE_ENTRIES =
@@ -49,12 +58,59 @@ public class DatabaseManager extends SQLiteOpenHelper {
         // This method is called when the database is created for the first time.
         db.execSQL(SQL_CREATE_ENTRIES);
         db.execSQL(DUMMY_USER);
+
+        String SQL_CREATE_NOTIFICATIONS =
+                "CREATE TABLE " + TABLE_NOTIFICATIONS + " (" +
+                        COLUMN_NOTIFICATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COLUMN_NOTIFICATION_MESSAGE + " TEXT NOT NULL)";
+        db.execSQL(SQL_CREATE_NOTIFICATIONS);
+
+        // Insert some fake notifications
+        insertFakeNotifications(db);
+    }
+
+    private void insertFakeNotifications(SQLiteDatabase db) {
+        insertNotification(db, "Welcome to MountHub!");
+        insertNotification(db, "A new trail near you has been added.");
+        insertNotification(db, "Weekly hiking summary is ready.");
+    }
+
+    private void insertNotification(SQLiteDatabase db, String message) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NOTIFICATION_MESSAGE, message);
+        db.insert(TABLE_NOTIFICATIONS, null, values);
+    }
+
+    public List<Notification> fetchNotifications() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        List<Notification> notifications = new ArrayList<>();
+
+        try {
+            cursor = db.query(TABLE_NOTIFICATIONS,
+                    new String[]{COLUMN_NOTIFICATION_MESSAGE},
+                    null, null, null, null, null);
+
+            if (cursor.moveToFirst()) {
+                do {
+                    String message = cursor.getString(0);
+                    notifications.add(new Notification(message));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", "Error fetching notifications: " + e.getMessage());
+        } finally {
+            if (cursor != null) cursor.close();
+            db.close();
+        }
+
+        return notifications;
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-         db.execSQL(SQL_DELETE_ENTRIES);
-         onCreate(db);
+        db.execSQL(SQL_DELETE_ENTRIES);
+        onCreate(db);
     }
 
     public long addUser(User user) {
