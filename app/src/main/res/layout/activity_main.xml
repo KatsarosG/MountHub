@@ -31,6 +31,7 @@
         app:navGraph="@navigation/mobile_navigation" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:dividerPadding="5dp"
@@ -57,6 +58,7 @@
             android:layout_height="match_parent"
             android:layout_margin="3dp"
             android:layout_weight="1"
+            android:onClick="goToNotifScreen"
             app:icon="@drawable/ic_notifications_black_24dp" />
 
         <Button
@@ -67,6 +69,23 @@
             android:layout_weight="1"
             app:icon="@drawable/ic_launcher_foreground" />
 
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/sos_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:onClick="goToSOSScreen"
+        android:text="SOS"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/button4"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.187"
+        app:rippleColor="@android:color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,7 +16,7 @@ public class Navigation {
 
     public void navigateTrail(Coordinate newLocation) {
         this.currentLocation = newLocation;
-        //code used to follow the location that changes according to the users movement-coordinate changes and navigate an existing trail
+        //code used to follow the location-coordinates that changes according to the users movement-coordinate changes and navigate an existing trail
     }
 
     public void postTrail(User user) {
