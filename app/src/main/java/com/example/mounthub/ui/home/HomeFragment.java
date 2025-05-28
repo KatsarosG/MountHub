@@ -1,16 +1,21 @@
 package com.example.mounthub.ui.home;
+import com.example.mounthub.AddLocationPopupWindow;
 import com.example.mounthub.R;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
@@ -22,6 +27,7 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -30,6 +36,8 @@ public class HomeFragment extends Fragment {
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private MapView mapView;
     private MyLocationNewOverlay locationOverlay;
+    private Button addLocationButton;
+    private boolean pinMode = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,13 +51,67 @@ public class HomeFragment extends Fragment {
         mapView = root.findViewById(R.id.map);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setMultiTouchControls(true);
+        addLocationButton = root.findViewById(R.id.add_location_btn);
 
         // Set initial zoom level and center the map
         setInitialMapView();
 
         requestPermissionsIfNecessary();
 
+        setupAddLocationButton();
+
+        setupMapClickListener();
+
         return root;
+    }
+
+    private void setupAddLocationButton() {
+        addLocationButton.setOnClickListener(v -> {
+            // Create and show the AddLocationPopupWindow
+            if (!pinMode) {
+                AddLocationPopupWindow addLocationPopupWindow = new AddLocationPopupWindow(requireContext());
+                addLocationPopupWindow.show();
+                pinMode = true;
+            }
+        });
+    }
+
+    private void addPinToMap(GeoPoint geoPoint) {
+        // Create a new marker
+        Marker marker = new Marker(mapView);
+        marker.setPosition(geoPoint);
+
+        // Add the marker to the map
+        mapView.getOverlays().add(marker);
+
+        // Refresh the map
+        mapView.invalidate();
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupMapClickListener() {
+        mapView.setOnTouchListener((v, event) -> {
+//            Log.d("pinMode", String.valueOf(pinMode));
+            if (pinMode) {
+                // Convert screen coordinates to geographic coordinates
+                GeoPoint geoPoint = (GeoPoint) mapView.getProjection().fromPixels(
+                        (int) event.getX(),
+                        (int) event.getY()
+                );
+
+                // Add a pin at the clicked location
+                addPinToMap(geoPoint);
+
+                // Exit pin adding mode
+                pinMode = false;
+
+                // Show next popup
+
+                return true;
+            }
+
+            return false;
+        });
     }
 
     private void setInitialMapView() {
