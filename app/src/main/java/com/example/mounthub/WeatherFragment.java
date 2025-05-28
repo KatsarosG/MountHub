@@ -35,13 +35,13 @@ import android.widget.Toast;
 public class WeatherFragment extends Fragment {
 
     public WeatherFragment() {
-        // Απαραίτητος κενός constructor
+        // Necessary empty constructor
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Συνδέουμε το fragment με το XML layout
+        // Connect fragment with XML layout
         View view = inflater.inflate(R.layout.fragment_weather, container, false);
 
         // Call weather API
@@ -101,7 +101,6 @@ public class WeatherFragment extends Fragment {
                     String description = weather.getString("description");
                     String iconCode = weather.getString("icon");
 
-                    // Συνδέουμε τα νέα views
                     TextView cityText = getView().findViewById(R.id.city_text);
                     TextView tempText = getView().findViewById(R.id.temp_text);
                     TextView descText = getView().findViewById(R.id.desc_text);
@@ -111,10 +110,9 @@ public class WeatherFragment extends Fragment {
                     tempText.setText("Temperature: " + temp + "°C");
                     descText.setText("Description: " + description);
 
-                    // Φόρτωση εικόνας από URL (π.χ. http://openweathermap.org/img/wn/10d@2x.png)
+                    // Loading picture from URL (π.χ. http://openweathermap.org/img/wn/10d@2x.png)
                     String iconUrl = "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
 
-                    // Αν δεν χρησιμοποιείς βιβλιοθήκη εικόνων, βάλε αυτό:
                     new Thread(() -> {
                         try {
                             InputStream in = new java.net.URL(iconUrl).openStream();
