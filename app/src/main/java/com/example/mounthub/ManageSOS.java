@@ -12,9 +12,10 @@ public class ManageSOS {
 
     private Map map;
     private MyLocationNewOverlay locationNewOverlay;
+    private CallService call_service;
 
     private static final int SOS_END_DELAY_MS = 10000; // we will change it based on how much time we want.
-
+    private String fail;
 
     public void getLocation(Context context, MapView mapView) {
         map = new Map(context, mapView);
@@ -56,6 +57,12 @@ public class ManageSOS {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         }, SOS_END_DELAY_MS);
+    }
+
+    public void display(){
+        String failed;
+        CallService call_service = new CallService();
+        failed = call_service.failed();
     }
 
 }
