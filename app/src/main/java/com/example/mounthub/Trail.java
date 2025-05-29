@@ -8,7 +8,7 @@ public class Trail {
 	private String name;
 	private final int ID; // read-only
 	private List<Coordinate> routeLine;
-	private Duration duration;
+//	private Duration duration;
 	private Difficulty difficulty;
 	private String info;
 	private List<String> photoPaths;
@@ -21,18 +21,19 @@ public class Trail {
 	}
 
 	// Constructor
-	public Trail(int ID, String name, List<Coordinate> routeLine, Duration duration,
-				 Difficulty difficulty, String info, List<String> photoPaths,
-				 List<Review> reviews, List<Excursion> excursions) {
+	public Trail(int ID, String name, List<Coordinate> routeLine,
+				 Difficulty difficulty, String info) {
+//				Duration duration,
+//				 List<String> photoPaths, List<Review> reviews, List<Excursion> excursions) {
 		this.ID = ID;
 		this.name = name;
 		this.routeLine = routeLine;
-		this.duration = duration;
+//		this.duration = duration;
 		this.difficulty = difficulty;
 		this.info = info;
-		this.photoPaths = photoPaths;
-		this.reviews = reviews;
-		this.excursions = excursions;
+//		this.photoPaths = photoPaths;
+//		this.reviews = reviews;
+//		this.excursions = excursions;
 	}
 
 	public String getName() {
@@ -55,13 +56,13 @@ public class Trail {
 		this.routeLine = routeLine;
 	}
 
-	public Duration getDuration() {
-		return duration;
-	}
-
-	public void setDuration(Duration duration) {
-		this.duration = duration;
-	}
+//	public Duration getDuration() {
+//		return duration;
+//	}
+//
+//	public void setDuration(Duration duration) {
+//		this.duration = duration;
+//	}
 
 	public Difficulty getDifficulty() {
 		return difficulty;
