@@ -3,6 +3,10 @@ package com.example.mounthub;
 public class Coordinate {
 	private double latitude;
 	private double longitude;
+	// Static coordinates used globally
+	public static double currentLatitude = 0.0;
+	public static double currentLongitude = 0.0;
+
 
 	// Constructor
 	public Coordinate(double latitude, double longitude) {
