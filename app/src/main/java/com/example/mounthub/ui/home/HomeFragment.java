@@ -1,14 +1,25 @@
 package com.example.mounthub.ui.home;
 
+
 import com.example.mounthub.LocationHandler;
+
+import com.example.mounthub.Coordinate;
+import com.example.mounthub.DatabaseManager;
+import com.example.mounthub.Location;
+import com.example.mounthub.LocationManage;
+
 import com.example.mounthub.R;
+import com.example.mounthub.Trail;
+import com.example.mounthub.TrailActionsPopup;
+
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
+
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -16,40 +27,46 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
+import androidx.annotation.NonNull;
+
+import androidx.fragment.app.Fragment;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+
+import org.osmdroid.events.MapListener;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-public class HomeFragment extends Fragment {
+import java.util.ArrayList;
+import java.util.List;
+import com.example.mounthub.Map;
 
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
-    private MapView mapView;
-    private MyLocationNewOverlay locationOverlay;
-    private Button addLocationButton;
-    private boolean pinMode = false;
-    private LocationHandler locationHandler;
+public class HomeFragment extends Fragment implements MapListener {
+
+    private static final double ZOOM_BOUND = 16.15;
+    private final List<Marker> allMarkers = new ArrayList<>();
+    private Map mainMap;
+    DatabaseManager databaseManager;
+    boolean displayingPins = false;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        Configuration.getInstance().load(requireContext(),
-                PreferenceManager.getDefaultSharedPreferences(requireContext()));
-
+        Configuration.getInstance().load(requireContext(), PreferenceManager.getDefaultSharedPreferences(requireContext()));
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mapView = root.findViewById(R.id.map);
-        mapView.setTileSource(TileSourceFactory.MAPNIK);
-        mapView.setMultiTouchControls(true);
+        Button buttonLayers = root.findViewById(R.id.button4);
+        MapView mapView = root.findViewById(R.id.map);
+        mainMap = new Map(requireContext(), this, mapView, buttonLayers);
+      
         addLocationButton = root.findViewById(R.id.add_location_btn);
 
         // add location handling
@@ -62,10 +79,8 @@ public class HomeFragment extends Fragment {
         setupMapClickListener();
         locationHandler = new LocationHandler();
 
-        // Set initial zoom level and center the map
-        setInitialMapView();
-
-        requestPermissionsIfNecessary();
+        // databaseManager init
+        databaseManager = new DatabaseManager(requireContext());
 
         return root;
     }
@@ -105,81 +120,125 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void setInitialMapView() {
-        // Set default center location (e.g., user's last known location or a fixed location)
-        GeoPoint defaultLocation = new GeoPoint(48.8583, 2.2944); // Eiffel Tower as an example
-        mapView.getController().setCenter(defaultLocation);
-        mapView.getController().setZoom(15.0); // Set the zoom level (e.g., 15.0 is a good default for street-level)
-
-        // Optionally, you can adjust zoom based on the user's location or other criteria
-    }
-
-    private void setupMyLocationOverlay() {
-        locationOverlay = new MyLocationNewOverlay(
-                new GpsMyLocationProvider(requireContext()),
-                mapView
-        );
-        // Get the default arrow icon (Vector Drawable)
-        Drawable arrowIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.arrow_icon);
-
-        // Change its color programmatically
-        if (arrowIconDrawable != null) {
-            Bitmap arrowIconBitmap = drawableToBitmap(arrowIconDrawable);
-            locationOverlay.setDirectionArrow(arrowIconBitmap, arrowIconBitmap);  // Apply the colored arrow
-        }
-        locationOverlay.enableMyLocation();
-        locationOverlay.enableFollowLocation();
-        mapView.getOverlays().add(locationOverlay);
-    }
-
-    private Bitmap drawableToBitmap(Drawable drawable) {
-        // Create a Bitmap with the same size as the drawable
-        int width = drawable.getIntrinsicWidth();
-        int height = drawable.getIntrinsicHeight();
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-
-        // Create a Canvas and draw the drawable onto the bitmap
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
-    }
-
-    private void requestPermissionsIfNecessary() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            requestPermissions(
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_PERMISSIONS_REQUEST_CODE
-            );
-        } else {
-            setupMyLocationOverlay();
-        }
-    }
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == mainMap.REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                setupMyLocationOverlay();
+                mainMap.setupMyLocationOverlay();
             }
         }
+    }
+
+    public boolean onZoom(ZoomEvent event) {
+//        Log.d("MapUpdate", "Map zoomed. New zoom level: " + event.getZoomLevel());
+//        Log.d("MapUpdate", "Map center after zoom: " + mapCenter.getLatitude() + ", " + mapCenter.getLongitude());
+//        Log.d("MapUpdate", "Map zoomed. New zoom level: " + event.getZoomLevel());
+        GeoPoint mapCenter = (GeoPoint) mainMap.mapView.getMapCenter();
+
+        double zoomLevel = event.getZoomLevel();
+
+        // clear markers
+        if (zoomLevel < ZOOM_BOUND && displayingPins) {
+            for (Marker marker : allMarkers) {
+                mainMap.mapView.getOverlays().remove(marker);
+            }
+            displayingPins = false;
+            return false;
+        }
+
+        // show markers
+        if (zoomLevel >= ZOOM_BOUND && !displayingPins) {
+            displayingPins = true;
+//            Log.d("MapUpdate", "Map zoomed. New zoom level: " + event.getZoomLevel());
+            java.util.Map<String, List<?>> points = databaseManager.pointsNear((float) mapCenter.getLatitude(), (float) mapCenter.getLongitude());
+
+            // load trails on map
+            for (Trail trail : (List<Trail>)points.get("trails")) {
+                Marker marker = getTrailMarker(trail.getRouteLine().get(0));
+
+                mainMap.mapView.getOverlays().add(marker);
+                allMarkers.add(marker);
+            }
+
+            // load locations on map
+            for (Location location : (List<Location>)points.get("locations")) {
+                Marker marker = getLocationMarker(location.getCoordinates(), location.getID());
+
+                mainMap.mapView.getOverlays().add(marker);
+                allMarkers.add(marker);
+            }
+
+
+            mainMap.mapView.invalidate();
+        }
+
+        return false;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mapView != null) mapView.onResume();
-        if (locationOverlay != null) locationOverlay.enableMyLocation();
+
+        if (mainMap.mapView != null) {
+            mainMap.mapView.onResume();
+            mainMap.mapView.addMapListener(this);
+        }
+        if (mainMap.locationOverlay != null)
+            mainMap.locationOverlay.enableMyLocation();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mapView != null) mapView.onPause();
-        if (locationOverlay != null) locationOverlay.disableMyLocation();
+
+        if (mainMap.mapView != null) {
+            mainMap.mapView.onPause();
+            mainMap.mapView.removeMapListener(this);
+        }
+        if (mainMap.locationOverlay != null)
+            mainMap.locationOverlay.disableMyLocation();
+    }
+
+    // MapListener methods
+    @Override
+    public boolean onScroll(ScrollEvent event) {
+        //TODO(opt): implement
+        return false;
+    }
+
+    @NonNull
+    private Marker getTrailMarker(Coordinate point) {
+        Marker marker = new Marker(mainMap.mapView);
+        marker.setPosition(new GeoPoint(point.getLatitude(), point.getLongitude()));
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.OVAL);
+        drawable.setColor(Color.BLUE);
+        drawable.setStroke(6, Color.WHITE); // White border
+        drawable.setSize(60, 60); // Size in pixels
+
+        marker.setIcon(drawable);
+        marker.setInfoWindow(new TrailActionsPopup(mainMap.mapView));
+
+        return marker;
+    }
+
+    @NonNull
+    private Marker getLocationMarker(Coordinate point, int locationId) {
+        Marker marker = new Marker(mainMap.mapView);
+        marker.setPosition(new GeoPoint(point.getLatitude(), point.getLongitude()));
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker.setRelatedObject(locationId);
+        marker.setOnMarkerClickListener((marker1, mapView) -> {
+            Intent intentObj = new Intent(requireContext(), LocationManage.class);
+            intentObj.putExtra("locationId", (int) marker1.getRelatedObject());
+            startActivity(intentObj);
+
+            return true;
+        });
+
+        return marker;
     }
 }
