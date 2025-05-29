@@ -44,7 +44,7 @@ public class Trail {
         this.ID = ID;
         this.name = name;
         this.routeLine = routeLine;
-//		this.duration = duration;
+		this.duration = duration;
         this.difficulty = difficulty;
         this.info = info;
 //		this.photoPaths = photoPaths;
