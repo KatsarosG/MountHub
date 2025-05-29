@@ -58,7 +58,7 @@ public class HomeFragment extends Fragment implements MapListener {
     DatabaseManager databaseManager;
     boolean displayingPins = false;
     private Button addLocationButton;
-    private boolean pinMode = false;
+    public boolean pinMode = false;
     private LocationHandler locationHandler;
 
     @Override
@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment implements MapListener {
         // add location handling
         addLocationButton.setOnClickListener(v -> {
             if (!pinMode) {
-                locationHandler.startAddLoc(requireContext());
+                locationHandler.startAddLoc(requireContext(), this);
                 pinMode = true;
             }
         });
@@ -133,7 +133,7 @@ public class HomeFragment extends Fragment implements MapListener {
                 pinMode = false;
 
                 // Show next popup
-                locationHandler.insertPin(requireContext(), newLocPin);
+                locationHandler.insertPin(requireContext(), newLocPin, this);
 
                 return true;
             }

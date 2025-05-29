@@ -11,11 +11,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.mounthub.ui.home.HomeFragment;
+
 import org.osmdroid.views.overlay.Marker;
 
 public class AskLocInfoPopupWindow extends Dialog {
 
-    public AskLocInfoPopupWindow(Context context, Marker locationPin) {
+    public AskLocInfoPopupWindow(Context context, Marker locationPin, HomeFragment homeFragment) {
         super(context);
 
         // Inflate the layout
@@ -64,6 +66,7 @@ public class AskLocInfoPopupWindow extends Dialog {
             DatabaseManager databaseManager = new DatabaseManager(this.getContext());
             databaseManager.addLocation(name, description, additionalInfo, coordinates);
 
+            homeFragment.pinMode = false;
             this.dismiss();
         });
 

@@ -2,6 +2,8 @@ package com.example.mounthub;
 
 import android.content.Context;
 
+import com.example.mounthub.ui.home.HomeFragment;
+
 import org.osmdroid.views.overlay.Marker;
 
 public class LocationHandler {
@@ -10,13 +12,13 @@ public class LocationHandler {
     AskLocInfoPopupWindow askLocInfoPopupWindow;
     DatabaseManager databaseManager;
 
-    public void startAddLoc(Context ctx) {
-        addLocationPopupWindow = new AddLocationPopupWindow(ctx);
+    public void startAddLoc(Context ctx, HomeFragment homeFragment) {
+        addLocationPopupWindow = new AddLocationPopupWindow(ctx, homeFragment);
         addLocationPopupWindow.askForPin();
     }
 
-    public void insertPin(Context ctx, Marker pin) {
-        askLocInfoPopupWindow = new AskLocInfoPopupWindow(ctx, pin);
+    public void insertPin(Context ctx, Marker pin, HomeFragment homeFragment) {
+        askLocInfoPopupWindow = new AskLocInfoPopupWindow(ctx, pin, homeFragment);
 
         // hide the add location popup
         addLocationPopupWindow.dismiss();

@@ -14,9 +14,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.mounthub.ui.home.HomeFragment;
+
 public class AddLocationPopupWindow extends Dialog {
 
-    public AddLocationPopupWindow(Context context) {
+    public AddLocationPopupWindow(Context context, HomeFragment homeFragment) {
         super(context);
 
         // Inflate the layout
@@ -45,6 +47,7 @@ public class AddLocationPopupWindow extends Dialog {
 
         // X Button
         btnCancel.setOnClickListener(v -> {
+            homeFragment.pinMode = false;
             this.dismiss();
         });
 
