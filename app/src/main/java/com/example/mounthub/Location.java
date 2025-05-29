@@ -10,12 +10,19 @@ public class Location {
     private String description;
     private String info;
 
+    public Location(int ID,String name, String locationType) {
+        this.ID = ID;
+        this.name = name;
+        this.locationType = locationType;
+    }
+
     public Location(int ID,String name, Coordinate coordinates, String locationType) {
         this.ID = ID;
         this.name = name;
         this.coordinates = coordinates;
         this.locationType = locationType;
     }
+
     public String getName() {
         return name;
     }
@@ -35,4 +42,8 @@ public class Location {
     public static void queryInsertLocInfo(String name, String locationType) {
 
     } //normally the return type should be location and not void but the body is currently empty because the database is not ready+input variable connection
+
+    public String getLocationType() {
+        return locationType;
+    }
 }
