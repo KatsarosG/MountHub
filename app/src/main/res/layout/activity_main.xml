@@ -7,38 +7,17 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground"
-        app:labelVisibilityMode="auto"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
-
-    <fragment
-        android:id="@+id/nav_host_fragment_activity_main"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:layout_constraintBottom_toTopOf="@id/nav_view"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/mobile_navigation" />
-
+    <!-- Top search bar with profile and notifications -->
     <LinearLayout
+        android:id="@+id/top_bar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:dividerPadding="5dp"
         android:orientation="horizontal"
         android:padding="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/searchInput"
@@ -50,23 +29,112 @@
             android:paddingStart="15dp"
             android:textColor="@color/black"
             android:textColorHint="@android:color/darker_gray" />
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="3dp"
+            android:background="#FFF9F9"
+            android:visibility="visible" />
 
         <Button
             android:id="@+id/button2"
             android:layout_width="60dp"
             android:layout_height="match_parent"
             android:layout_margin="3dp"
-            android:layout_weight="1"
-            app:icon="@drawable/ic_notifications_black_24dp" />
+            android:background="@drawable/ic_notifications_black_24dp" />
 
         <Button
             android:id="@+id/profile_btn"
             android:layout_width="60dp"
             android:layout_height="match_parent"
             android:layout_margin="3dp"
-            android:layout_weight="1"
-            app:icon="@drawable/ic_launcher_foreground" />
+            android:background="@drawable/ic_launcher_foreground" />
+    </LinearLayout>
 
+    <FrameLayout
+        android:id="@+id/weather_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/custom_bottom_bar"
+        app:layout_constraintTop_toBottomOf="@id/searchView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Fragment container -->
+    <fragment
+        android:id="@+id/nav_host_fragment_activity_main"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/mobile_navigation"
+        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintBottom_toTopOf="@id/custom_bottom_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Custom bottom bar -->
+    <LinearLayout
+        android:id="@+id/custom_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:background="#FFF9F9"
+        android:padding="8dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/weather_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_weather_sunny_cloud"
+            android:contentDescription="Weather" />
+
+        <ImageButton
+            android:id="@+id/add_trail_with_pins_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_add_trail_with_pins"
+            android:contentDescription="Add trail with pins" />
+
+        <ImageButton
+            android:id="@+id/record_trail_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_record_trail"
+            android:contentDescription="Record trail" />
+
+        <ImageButton
+            android:id="@+id/add_location_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_add_location"
+            android:contentDescription="Add Location" />
+
+        <ImageButton
+            android:id="@+id/locations_near_me_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_locations_near_me"
+            android:contentDescription="Locations Near Me" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

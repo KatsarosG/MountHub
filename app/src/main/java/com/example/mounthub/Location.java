@@ -15,9 +15,23 @@ public class Location {
         this.name = name;
         this.locationType = locationType;
     }
+
+    public Location(int ID,String name, Coordinate coordinates, String locationType) {
+        this.ID = ID;
+        this.name = name;
+        this.coordinates = coordinates;
+        this.locationType = locationType;
+    }
+
     public String getName() {
         return name;
     }
+
+    public int getID() {
+        return ID;
+    }
+
+    public Coordinate getCoordinates() { return coordinates; }
 
     public String getDescription(String desc){
         return description;

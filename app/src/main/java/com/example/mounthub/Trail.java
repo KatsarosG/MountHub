@@ -37,6 +37,21 @@ public class Trail {
 		this.distance = distance;
 	}
 
+    public Trail(int ID, String name, List<Coordinate> routeLine,
+                 Difficulty difficulty, String info) {
+//				Duration duration,
+//				 List<String> photoPaths, List<Review> reviews, List<Excursion> excursions) {
+        this.ID = ID;
+        this.name = name;
+        this.routeLine = routeLine;
+//		this.duration = duration;
+        this.difficulty = difficulty;
+        this.info = info;
+//		this.photoPaths = photoPaths;
+//		this.reviews = reviews;
+//		this.excursions = excursions;
+    }
+
 	public String getName() {
 		return name;
 	}
