@@ -10,6 +10,12 @@ import android.util.Log;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.xml.datatype.Duration;
+
 public class DatabaseManager extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "mounthubDB.db";
     private static final int DATABASE_VERSION = 3;
@@ -159,6 +165,53 @@ public class DatabaseManager extends SQLiteOpenHelper {
             db.close();
         }
         return user;
+    }
+
+    // Searching Functions
+    public Trail[] searchForTrails(String query) {
+        Log.d("SearchManage", "Search query/tab: " + query + "/Trails");
+        // Dummy code instead of call to DataBase:
+        List<Coordinate> route1 = Arrays.asList(new Coordinate(38.1, 23.7), new Coordinate(38.2, 23.8));
+        List<Coordinate> route2 = Arrays.asList(new Coordinate(37.9, 23.6), new Coordinate(38.0, 23.5));
+        List<Coordinate> route3 = Arrays.asList(new Coordinate(39.1, 22.7), new Coordinate(39.2, 22.8));
+        List<Coordinate> route4 = Arrays.asList(new Coordinate(40.1, 21.7), new Coordinate(40.2, 21.8));
+
+        List<String> photos = Arrays.asList("trail1.jpg", "trail2.jpg");
+
+        List<Integer> reviewIds = Arrays.asList(101, 102, 103);
+
+        List<Excursion> excursions = new ArrayList<>();
+
+        Trail tempTrail1 = new Trail(1, "Mount Olympus Trail", route1, 5, Trail.Difficulty.HARD,
+                "Scenic trail up Mount Olympus", photos, reviewIds, excursions, 16);
+
+        Trail tempTrail2 = new Trail(2, "Parnitha Forest Walk", route2, 2, Trail.Difficulty.EASY,
+                "Leisure walk through Parnitha forest", photos, reviewIds, excursions, 5);
+
+        Trail tempTrail3 = new Trail(3, "Zagori Stone Bridge Path", route3, 3, Trail.Difficulty.MEDIUM,
+                "Historic trail with stone bridges", photos, reviewIds, excursions, 8);
+
+        Trail tempTrail4 = new Trail(4, "Vikos Gorge Hike", route4, 6, Trail.Difficulty.HARD,
+                "Trek through the famous Vikos Gorge", photos, reviewIds, excursions, 12);
+
+        // return found trails:
+        return new Trail[] { tempTrail1, tempTrail2, tempTrail3, tempTrail4 };
+    }
+    public Location[] searchForLocations(String query) {
+        Log.d("SearchManage", "Search query/tab: " + query + "/Locations");
+        Location loc1 = new Location(1, "Mount Olympus", "Mountain");
+        Location loc2 = new Location(2, "Samaria Gorge", "Gorge");
+        Location loc3 = new Location(3, "Lake Plastira", "Lake");
+        Location loc4 = new Location(4, "Vikos Gorge", "Canyon");
+
+        return new Location[] { loc1, loc2, loc3, loc4 };
+    }
+    public User[] searchForUsers(String query) {
+        Log.d("SearchManage", "Search query/tab: " + query + "/Users");
+        User user1 = new User(1, "George123", "giorgos@example.com", "passsssword", "I like maps!");
+        User user2 = new User(1, "Hikerman", "hikehike@example.com", "passsssword123", "I HIKE ALL THE TIME");
+        User user3 = new User(1, "GirlBoss", "girlboss@example.com", "passsssword212121", "I like maps too!");
+        return new User[] {user1, user2, user3};
     }
 
 //    public boolean editUser(User user) {

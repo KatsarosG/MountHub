@@ -7,32 +7,33 @@ import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.tabs.TabLayout;
 
 public class SearchManage {
     private Context context;
+    private String searchQuery;
 
     public SearchManage(Context context, TextInputEditText searchInput) {
         this.context = context;
 
         searchInput.setOnEditorActionListener((v, actionId, event) -> {
-            // Trigger when "done" or Enter key is pressed
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                     actionId == EditorInfo.IME_ACTION_DONE ||
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER &&
                             event.getAction() == KeyEvent.ACTION_DOWN)) {
 
-                String query = searchInput.getText().toString().trim();
-                if (!query.isEmpty()) {
-                    Log.d("SearchManage", "Search query: " + query);
+                searchQuery = searchInput.getText().toString().trim();
+                if (!searchQuery.isEmpty()) {
+                    //Log.d("SearchManage", "Search query: " + searchQuery);
 
                     // Launch search results activity
                     Intent intent = new Intent(context, SearchResultsActivity.class);
-                    intent.putExtra("searchQuery", query);
+                    intent.putExtra("searchQuery", searchQuery);
                     context.startActivity(intent);
                 }
-                return true; // Consume event
+                return true;
             }
-            return false; // Let system handle other keys
+            return false;
         });
     }
 }

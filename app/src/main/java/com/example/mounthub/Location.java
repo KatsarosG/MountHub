@@ -29,4 +29,7 @@ public class Location {
 
     } //normally the return type should be location and not void but the body is currently empty because the database is not ready+input variable connection
 
+    public String getLocationType() {
+        return locationType;
+    }
 }

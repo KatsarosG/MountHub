@@ -45,7 +45,7 @@
             android:layout_width="235dp"
             android:layout_height="44dp"
             android:background="@color/white"
-            android:hint="Search"
+            android:hint="⌕ Search"
             android:includeFontPadding="true"
             android:paddingStart="15dp"
             android:textColor="@color/black"

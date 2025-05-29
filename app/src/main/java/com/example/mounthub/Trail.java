@@ -8,12 +8,13 @@ public class Trail {
 	private String name;
 	private final int ID; // read-only
 	private List<Coordinate> routeLine;
-	private Duration duration;
+	private int duration;
 	private Difficulty difficulty;
 	private String info;
 	private List<String> photoPaths;
-	private List<Review> reviews;
+	private List<Integer> reviews;
 	private List<Excursion> excursions;
+	private int distance;
 
 	// Enum for difficulty
 	public enum Difficulty {
@@ -21,9 +22,9 @@ public class Trail {
 	}
 
 	// Constructor
-	public Trail(int ID, String name, List<Coordinate> routeLine, Duration duration,
-				 Difficulty difficulty, String info, List<String> photoPaths,
-				 List<Review> reviews, List<Excursion> excursions) {
+	public Trail(int ID, String name, List<Coordinate> routeLine, int duration,
+                 Difficulty difficulty, String info, List<String> photoPaths,
+                 List<Integer> reviews, List<Excursion> excursions, int distance) {
 		this.ID = ID;
 		this.name = name;
 		this.routeLine = routeLine;
@@ -33,6 +34,7 @@ public class Trail {
 		this.photoPaths = photoPaths;
 		this.reviews = reviews;
 		this.excursions = excursions;
+		this.distance = distance;
 	}
 
 	public String getName() {
@@ -55,11 +57,11 @@ public class Trail {
 		this.routeLine = routeLine;
 	}
 
-	public Duration getDuration() {
+	public int getDuration() {
 		return duration;
 	}
 
-	public void setDuration(Duration duration) {
+	public void setDuration(int duration) {
 		this.duration = duration;
 	}
 
@@ -87,11 +89,11 @@ public class Trail {
 		this.photoPaths = photoPaths;
 	}
 
-	public List<Review> getReviews() {
+	public List<Integer> getReviews() {
 		return reviews;
 	}
 
-	public void setReviews(List<Review> reviews) {
+	public void setReviews(List<Integer> reviews) {
 		this.reviews = reviews;
 	}
 
@@ -106,5 +108,9 @@ public class Trail {
 	public void navigateTrail() {
 		//Temp
 		System.out.println("Navigating trail: " + name);
+	}
+
+	public int getDistance() {
+		return distance;
 	}
 }
