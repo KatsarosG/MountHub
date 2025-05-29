@@ -40,6 +40,7 @@ import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+
 import org.osmdroid.views.overlay.Marker;
 
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -81,6 +82,24 @@ public class HomeFragment extends Fragment implements MapListener {
 
         // databaseManager init
         databaseManager = new DatabaseManager(requireContext());
+
+        mainMap.mapView.setMapListener(new org.osmdroid.events.MapListener() {
+            @Override
+            public boolean onScroll(org.osmdroid.events.ScrollEvent event) {
+                GeoPoint center = (GeoPoint) mainMap.mapView.getMapCenter();
+                Coordinate.currentLatitude = center.getLatitude();
+                Coordinate.currentLongitude = center.getLongitude();
+                return true;
+            }
+
+            @Override
+            public boolean onZoom(org.osmdroid.events.ZoomEvent event) {
+                GeoPoint center = (GeoPoint) mainMap.mapView.getMapCenter();
+                Coordinate.currentLatitude = center.getLatitude();
+                Coordinate.currentLongitude = center.getLongitude();
+                return true;
+            }
+        });
 
         return root;
     }
