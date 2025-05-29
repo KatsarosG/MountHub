@@ -2,7 +2,7 @@ package com.example.mounthub;
 
 public class CallService {
 
-    ManageSOSClass manage_sos;
+    ManageSOS manage_sos;
     String msg;
 
     public String Call112() {

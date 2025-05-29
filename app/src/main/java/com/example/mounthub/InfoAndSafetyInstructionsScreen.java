@@ -5,15 +5,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
-import java.text.BreakIterator;
 
 public class InfoAndSafetyInstructionsScreen extends AppCompatActivity {
 
@@ -44,12 +41,12 @@ public class InfoAndSafetyInstructionsScreen extends AppCompatActivity {
         devicesMessageTextView = findViewById(R.id.devicesMessageTextView);
 
         btnBack = findViewById(R.id.btnBack1);
-        ManageSOSClass sosManager = new ManageSOSClass();
+        ManageSOS sosManager = new ManageSOS();
         btnBack.setOnClickListener(view -> {
             sosManager.cancelCall(this);
             sosManager.stopSharingLocationwithEmergencyContact(this);
 
-            new Handler().postDelayed(() -> onBackPressed(), 1000); // 1-second delay
+            new Handler().postDelayed(() -> onBackPressed(), 1000);
         });
 
         displayInfo();
@@ -63,9 +60,13 @@ public class InfoAndSafetyInstructionsScreen extends AppCompatActivity {
         btnNotInDanger = findViewById(R.id.btnNoDanger);
         btnNotInDanger.setOnClickListener(view -> {
             sosManager.cancelCall(this);
-            new Handler().postDelayed(() -> onBackPressed(), 1000); // 1-second delay
+            new Handler().postDelayed(() -> onBackPressed(), 1000);
         });
-        }
+
+
+        sosManager.endSOSNotification(this);
+
+    }
 
 
     public void displayInfo(){
@@ -77,7 +78,7 @@ public class InfoAndSafetyInstructionsScreen extends AppCompatActivity {
         CallService call_service = new CallService();
         call_message = call_service.Call112();
 
-        ManageSOSClass manage_sos = new ManageSOSClass();
+        ManageSOS manage_sos = new ManageSOS();
         devices_message = manage_sos.sendAlertToNearbyDevices();
 
         contactMessageTextView.setText(contact_message);
