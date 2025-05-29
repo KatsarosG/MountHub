@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class LocationManager extends AppCompatActivity {
+    /*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +27,6 @@ public class LocationManager extends AppCompatActivity {
         type.setText(loc.getLocationType());
         coords.setText("Lat: " + loc.getCoordinates().getLatitude() +
                 ", Lon: " + loc.getCoordinates().getLongitude());
-    }
+    }*/
 }
 

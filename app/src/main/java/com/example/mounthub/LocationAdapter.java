@@ -33,37 +33,36 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     @Override
     public void onBindViewHolder(@NonNull LocationViewHolder holder, int position) {
         Location loc = locations.get(position);
-
         if (loc == null) return;
 
-        // Set name and distance
         holder.name.setText(loc.getName());
         holder.distance.setText(String.format("Distance: %.0f m", loc.getDistance()));
 
-        // Set icon based on location type
         int iconRes;
-        switch (loc.getLocationType().toLowerCase()) {
-            case "water source":
-                iconRes = R.drawable.ic_water;
-                break;
-            case "mountain":
-                iconRes = R.drawable.ic_mountain;
-                break;
-            case "village":
-                iconRes = R.drawable.ic_village;
-                break;
-            case "refuge":
-                iconRes = R.drawable.ic_refuge;
-                break;
-            default:
-                iconRes = R.drawable.ic_default;
-                break;
+        if (loc.getLocationType() == null) {
+            iconRes = R.drawable.ic_default_loc;
+        } else {
+            switch (loc.getLocationType().toLowerCase()) {
+                case "water source":
+                    iconRes = R.drawable.ic_water;
+                    break;
+                case "mountain":
+                    iconRes = R.drawable.ic_mountain;
+                    break;
+                case "village":
+                    iconRes = R.drawable.ic_village;
+                    break;
+                case "refuge":
+                    iconRes = R.drawable.ic_refuge;
+                    break;
+                default:
+                    iconRes = R.drawable.ic_default_loc;
+            }
         }
         holder.locType.setImageResource(iconRes);
 
-        // Handle item click
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, LocationManager.class); // 👈 Use your actual detail activity
+            Intent intent = new Intent(context, LocationManager.class);
             intent.putExtra("numberValue", loc.getId());
             context.startActivity(intent);
         });

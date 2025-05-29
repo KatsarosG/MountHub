@@ -12,6 +12,13 @@
     <string name="logout">logout</string>
     <string name="confirm_password">confirm password</string>
     <string name="delete">delete</string>
+
+    <string name="water_source">Water Source</string>
+    <string name="location_type_icon">Location type icon</string>
+    <string name="village">Village</string>
+    <string name="default_loc">Default</string>
+    <string name="mountain">Mountain</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
