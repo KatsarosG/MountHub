@@ -35,5 +35,4 @@ public class Location {
     public static void queryInsertLocInfo(String name, String locationType) {
 
     } //normally the return type should be location and not void but the body is currently empty because the database is not ready+input variable connection
-
 }

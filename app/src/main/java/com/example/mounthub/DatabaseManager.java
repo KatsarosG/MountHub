@@ -10,6 +10,8 @@ import android.util.Log;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Random;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -166,6 +168,29 @@ public class DatabaseManager extends SQLiteOpenHelper {
             db.close();
         }
         return user;
+    }
+
+    public int addLocation(String name, String description, String additionalInfo, Coordinate coordinate) {
+
+        return 1; // return location id
+    }
+
+    public boolean isLocDuplicate(String name, String locationType, Coordinate coordinates, Context ctx) {
+        Random random = new Random();
+
+        // is duplicate
+        if (random.nextBoolean()) {
+            AlertWindow alertWindow = new AlertWindow(ctx);
+            alertWindow.showAlert();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public void QueryLocInfo() {
+        // TODO: Add location info to database
     }
 
 //    public boolean editUser(User user) {

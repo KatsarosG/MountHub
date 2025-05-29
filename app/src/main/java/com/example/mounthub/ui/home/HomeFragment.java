@@ -1,14 +1,22 @@
 package com.example.mounthub.ui.home;
 
+
+import com.example.mounthub.LocationHandler;
+
 import com.example.mounthub.Coordinate;
 import com.example.mounthub.DatabaseManager;
 import com.example.mounthub.Location;
 import com.example.mounthub.LocationManage;
+
 import com.example.mounthub.R;
 import com.example.mounthub.Trail;
 import com.example.mounthub.TrailActionsPopup;
 
+
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -18,7 +26,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+
+import androidx.annotation.NonNull;
+
 import androidx.fragment.app.Fragment;
 import org.osmdroid.config.Configuration;
 
@@ -28,6 +41,9 @@ import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,11 +66,58 @@ public class HomeFragment extends Fragment implements MapListener {
         Button buttonLayers = root.findViewById(R.id.button4);
         MapView mapView = root.findViewById(R.id.map);
         mainMap = new Map(requireContext(), this, mapView, buttonLayers);
+      
+        addLocationButton = root.findViewById(R.id.add_location_btn);
+
+        // add location handling
+        addLocationButton.setOnClickListener(v -> {
+            if (!pinMode) {
+                locationHandler.startAddLoc(requireContext());
+                pinMode = true;
+            }
+        });
+        setupMapClickListener();
+        locationHandler = new LocationHandler();
 
         // databaseManager init
         databaseManager = new DatabaseManager(requireContext());
 
         return root;
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupMapClickListener() {
+        // put pin
+        mapView.setOnTouchListener((v, event) -> {
+//            Log.d("pinMode", String.valueOf(pinMode));
+            if (pinMode) {
+                // Convert screen coordinates to geographic coordinates
+                GeoPoint geoPoint = (GeoPoint) mapView.getProjection().fromPixels(
+                        (int) event.getX(),
+                        (int) event.getY()
+                );
+
+                // Create a new pin
+                Marker newLocPin = new Marker(mapView);
+                newLocPin.setPosition(geoPoint);
+
+                // Add the newLocPin to the map
+                mapView.getOverlays().add(newLocPin);
+
+                // Refresh the map
+                mapView.invalidate();
+
+                // Exit pin adding mode
+                pinMode = false;
+
+                // Show next popup
+                locationHandler.insertPin(requireContext(), newLocPin);
+
+                return true;
+            }
+
+            return false;
+        });
     }
 
     @Override
