@@ -8,6 +8,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.SearchView;
 
+import com.example.mounthub.ui.home.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -54,6 +55,22 @@ public class MainActivity extends AppCompatActivity {
         locationsNearMeButton = findViewById(R.id.locations_near_me_button);
         addTrailWithPinsButton = findViewById(R.id.add_trail_with_pins_button);
 
+        addLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Use FragmentManager to get HomeFragment
+                HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.nav_host_fragment_activity_main)
+                        .getChildFragmentManager()
+                        .getFragments()
+                        .get(0);  // get(0) is safe if HomeFragment is loaded first
+
+                if (homeFragment != null) {
+                    homeFragment.startAddLocationMode(); // create this method in HomeFragment
+                }
+            }
+        });
+
         // to profile activity
         profileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,13 +97,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "Record trail clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        addLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Add location clicked", Toast.LENGTH_SHORT).show();
             }
         });
 

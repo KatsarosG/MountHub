@@ -70,16 +70,7 @@ public class HomeFragment extends Fragment implements MapListener {
         Button buttonLayers = root.findViewById(R.id.button4);
         MapView mapView = root.findViewById(R.id.map);
         mainMap = new Map(requireContext(), this, mapView, buttonLayers);
-      
-        addLocationButton = root.findViewById(R.id.add_location_btn);
 
-        // add location handling
-        addLocationButton.setOnClickListener(v -> {
-            if (!pinMode) {
-                locationHandler.startAddLoc(requireContext());
-                pinMode = true;
-            }
-        });
         setupMapClickListener();
         locationHandler = new LocationHandler();
 
@@ -262,5 +253,12 @@ public class HomeFragment extends Fragment implements MapListener {
         });
 
         return marker;
+    }
+
+    public void startAddLocationMode() {
+        if (!pinMode) {
+            locationHandler.startAddLoc(requireContext());
+            pinMode = true;
+        }
     }
 }
