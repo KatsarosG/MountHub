@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.SearchView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -16,6 +17,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.mounthub.databinding.ActivityMainBinding;
+import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -27,12 +29,13 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     Button profileBtn;
+    private SearchManage searchManage;
+
     ImageButton weatherButton;
     ImageButton recordTrailButton;
     ImageButton addLocationButton;
     ImageButton locationsNearMeButton;
     ImageButton addTrailWithPinsButton;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
         // elements
         profileBtn = findViewById(R.id.profile_btn);
+        TextInputEditText searchInput = findViewById(R.id.searchInput);
+        searchManage = new SearchManage(this, searchInput);
 
         weatherButton = findViewById(R.id.weather_button);
         recordTrailButton = findViewById(R.id.record_trail_button);

@@ -52,6 +52,7 @@
             android:exported="false"
             android:theme="@style/Theme.ActionBar"
             android:parentActivityName=".LoginActivity" />
+        <activity android:name=".SearchResultsActivity" />
     </application>
 
 </manifest>
