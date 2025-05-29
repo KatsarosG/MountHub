@@ -5,7 +5,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
 
 public class TrailActionsPopup extends InfoWindow {
@@ -15,7 +14,6 @@ public class TrailActionsPopup extends InfoWindow {
 
         @Override
         public void onOpen(Object item) {
-            Marker marker = (Marker) item;
             View view = mView;
 
             Button button1 = view.findViewById(R.id.button1);
@@ -24,7 +22,6 @@ public class TrailActionsPopup extends InfoWindow {
 
             button1.setOnClickListener(v -> {
                 Toast.makeText(view.getContext(), "Action 1 clicked!", Toast.LENGTH_SHORT).show();
-                // handle action
             });
 
             button2.setOnClickListener(v -> {
@@ -37,8 +34,5 @@ public class TrailActionsPopup extends InfoWindow {
         }
 
         @Override
-        public void onClose() {
-            // Optional: handle when popup closes
-    }
-
+        public void onClose() {}
 }
