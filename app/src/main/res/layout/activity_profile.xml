@@ -9,7 +9,7 @@
     tools:context=".ProfileActivity"
     tools:ignore="ExtraText">
 
-    <!-- Vertical Guideline at 50% -->
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/midGuideline"
         android:layout_width="wrap_content"
@@ -17,7 +17,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
-    <!-- Top Half Background -->
+
     <View
         android:id="@+id/topHalf"
         android:layout_width="0dp"
@@ -27,8 +27,7 @@
     app:layout_constraintBottom_toTopOf="@id/midGuideline"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent" />
-    <!-- Bottom Half Background -->
-    <!-- Bottom half with trail list and white background -->
+
     <LinearLayout
         android:id="@+id/trailContainer"
         android:layout_width="0dp"
@@ -41,7 +40,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Trail 1 -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -55,7 +54,6 @@
             android:background="#CCCCCC"
             android:layout_marginVertical="8dp" />
 
-        <!-- Trail 2 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -69,7 +67,7 @@
             android:background="#CCCCCC"
             android:layout_marginVertical="8dp" />
 
-        <!-- Trail 3 -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -89,7 +87,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.144"
         app:layout_constraintStart_toStartOf="parent" />
-    <!-- Friend Count -->
+
     <TextView
         android:id="@+id/friendsCount"
         android:layout_width="wrap_content"
@@ -105,7 +103,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Bio -->
+
     <TextView
         android:id="@+id/bio"
         android:layout_width="0dp"

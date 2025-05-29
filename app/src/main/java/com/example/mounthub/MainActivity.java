@@ -2,18 +2,13 @@ package com.example.mounthub;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.example.mounthub.databinding.ActivityMainBinding;
 
@@ -60,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToSOSScreen(View v){
-        Intent i = new Intent(this, SOS.class);
+        Intent i = new Intent(this, InfoAndSafetyInstructionsScreen.class);
         startActivity(i);
     }
 

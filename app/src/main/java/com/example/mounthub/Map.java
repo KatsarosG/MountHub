@@ -17,7 +17,7 @@ public class Map {
     private MapView mapView;
     private MyLocationNewOverlay locationOverlay;
 
-    // ✅ Add constructor
+
     public Map(Context context, MapView mapView) {
         this.context = context;
         this.mapView = mapView;

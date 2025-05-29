@@ -8,14 +8,12 @@ public class ContactService {
     private MyLocationNewOverlay location;
 
     private String msg;
-    public void sharewithContact(){
+    public String sharewithContact(){
         ManageSOSClass manage_sos = new ManageSOSClass();
         location = manage_sos.shareLocationwithEmergencyContact();
-        System.out.println("Currently Sharing your location with your chosen contact");
+        msg = "Currently Sharing your location with your chosen contact";
+        return msg;
     }
 
-    public void call112(){
-        msg = manage_sos.initiateCall();
-        System.out.println(msg);
-    }
+
 }
