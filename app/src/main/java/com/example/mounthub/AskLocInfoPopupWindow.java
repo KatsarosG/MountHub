@@ -30,6 +30,7 @@ public class AskLocInfoPopupWindow extends Dialog {
         EditText nameInput = dialogView.findViewById(R.id.name);
         EditText descriptionInput = dialogView.findViewById(R.id.description);
         EditText additionalInfoInput = dialogView.findViewById(R.id.additionalInfo);
+        EditText locationTypeInput = dialogView.findViewById(R.id.location_type);
 
         // Remove backdrop and make background transparent
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
@@ -46,11 +47,19 @@ public class AskLocInfoPopupWindow extends Dialog {
         btnSubmit.setOnClickListener(v -> {
             String name = nameInput.getText().toString();
             String description = descriptionInput.getText().toString();
+            String locationType = locationTypeInput.getText().toString();
             String additionalInfo = additionalInfoInput.getText().toString();
             Coordinate coordinates = new Coordinate(
                     locationPin.getPosition().getLatitude(),
                     locationPin.getPosition().getLongitude()
             );
+
+            LocationHandler locationHandler = new LocationHandler();
+            if (!locationHandler.validateLoc(this.getContext(), name, locationType, coordinates)) {
+                return;
+            }
+
+            locationHandler.insertInfo();
 
             DatabaseManager databaseManager = new DatabaseManager(this.getContext());
             databaseManager.addLocation(name, description, additionalInfo, coordinates);
@@ -58,5 +67,9 @@ public class AskLocInfoPopupWindow extends Dialog {
             this.dismiss();
         });
 
+    }
+
+    public void askForInfo() {
+        this.show();
     }
 }

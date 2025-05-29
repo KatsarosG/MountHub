@@ -43,10 +43,14 @@ public class AddLocationPopupWindow extends Dialog {
         params.gravity = Gravity.BOTTOM;
         getWindow().setAttributes(params);
 
-        // Set button click listeners
+        // X Button
         btnCancel.setOnClickListener(v -> {
             this.dismiss();
         });
 
+    }
+
+    public void askForPin() {
+        this.show();
     }
 }
