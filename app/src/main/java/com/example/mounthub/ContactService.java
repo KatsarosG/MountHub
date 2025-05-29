@@ -1,8 +1,10 @@
 package com.example.mounthub;
 
+import android.content.Context;
+
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-public class ContactService {
+public class ContactService{
 
     private ManageSOSClass manage_sos;
     private MyLocationNewOverlay location;

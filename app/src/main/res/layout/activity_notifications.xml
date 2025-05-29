@@ -8,7 +8,7 @@
     android:padding="16dp"
     tools:context=".NotificationsActivity">
 
-    <!-- Back Button -->
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
@@ -24,7 +24,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Title -->
+
     <TextView
         android:id="@+id/notifications_title"
         android:layout_width="0dp"
@@ -41,7 +41,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- ListView for Notifications -->
+
     <ListView
         android:id="@+id/listViewNotifications"
         android:layout_width="0dp"
