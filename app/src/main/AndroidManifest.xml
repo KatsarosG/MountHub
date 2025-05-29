@@ -28,6 +28,11 @@
             android:theme="@style/Theme.ActionBar"
             android:parentActivityName=".MainActivity" />
         <activity
+            android:name=".LocationManage"
+            android:exported="false"
+            android:theme="@style/Theme.ActionBar"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".MainActivity"
             android:exported="false">
         </activity>
