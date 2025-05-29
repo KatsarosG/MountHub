@@ -57,6 +57,9 @@ public class HomeFragment extends Fragment implements MapListener {
     private Map mainMap;
     DatabaseManager databaseManager;
     boolean displayingPins = false;
+    private Button addLocationButton;
+    private boolean pinMode = false;
+    private LocationHandler locationHandler;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -107,24 +110,24 @@ public class HomeFragment extends Fragment implements MapListener {
     @SuppressLint("ClickableViewAccessibility")
     private void setupMapClickListener() {
         // put pin
-        mapView.setOnTouchListener((v, event) -> {
+        mainMap.mapView.setOnTouchListener((v, event) -> {
 //            Log.d("pinMode", String.valueOf(pinMode));
             if (pinMode) {
                 // Convert screen coordinates to geographic coordinates
-                GeoPoint geoPoint = (GeoPoint) mapView.getProjection().fromPixels(
+                GeoPoint geoPoint = (GeoPoint) mainMap.mapView.getProjection().fromPixels(
                         (int) event.getX(),
                         (int) event.getY()
                 );
 
                 // Create a new pin
-                Marker newLocPin = new Marker(mapView);
+                Marker newLocPin = new Marker(mainMap.mapView);
                 newLocPin.setPosition(geoPoint);
 
                 // Add the newLocPin to the map
-                mapView.getOverlays().add(newLocPin);
+                mainMap.mapView.getOverlays().add(newLocPin);
 
                 // Refresh the map
-                mapView.invalidate();
+                mainMap.mapView.invalidate();
 
                 // Exit pin adding mode
                 pinMode = false;
