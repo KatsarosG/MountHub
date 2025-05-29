@@ -175,7 +175,7 @@ public class HomeFragment extends Fragment implements MapListener {
 
             // load locations on map
             for (Location location : (List<Location>)points.get("locations")) {
-                Marker marker = getLocationMarker(location.getCoordinates(), location.getID());
+                Marker marker = getLocationMarker(location.getCoordinates(), location.getId());
 
                 mainMap.mapView.getOverlays().add(marker);
                 allMarkers.add(marker);

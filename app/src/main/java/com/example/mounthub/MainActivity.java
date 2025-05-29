@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         weatherButton = findViewById(R.id.weather_button);
         recordTrailButton = findViewById(R.id.record_trail_button);
         addLocationButton = findViewById(R.id.add_location_button);
-        locationsNearMeButton = findViewById(R.id.locations_near_me_button);
+        locationsNearMeButton = findViewById(R.id.locationsnear_btn);
         addTrailWithPinsButton = findViewById(R.id.add_trail_with_pins_button);
 
         addLocationButton.setOnClickListener(new View.OnClickListener() {
@@ -103,9 +103,11 @@ public class MainActivity extends AppCompatActivity {
         locationsNearMeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Locations near me clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, NearbyLocActivity.class);
+                startActivity(intent);
             }
         });
+
 
         addTrailWithPinsButton.setOnClickListener(new View.OnClickListener() {
             @Override

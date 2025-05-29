@@ -198,4 +198,52 @@ public class DatabaseManager extends SQLiteOpenHelper {
     public Location getLocationDetails(int locationId) {
         return new Location(locationId, "Loc1", new Coordinate(38.2, 23.8), "Mountain");
     }
+
+    public int addLocation(String name, String description, String additionalInfo, Coordinate coordinate) {
+
+        return 1; // return location id
+    }
+
+    public void QueryLocInfo() {
+        // TODO: Add location info to database
+    }
+
+//    public boolean editUser(User user) {
+//        SQLiteDatabase
+//    }
+public List<Location> fetchAllLocations() {
+    List<Location> locations = new ArrayList<>();
+    SQLiteDatabase db = this.getReadableDatabase();
+
+    String query = "SELECT * FROM " + TABLE_LOCATIONS;
+    Cursor cursor = null;
+
+    try {
+        cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_LOCATION_ID));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_NAME));
+                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LOCATION_LATITUDE));
+                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LOCATION_LONGITUDE));
+                String description = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_DESCRIPTION));
+                String locationType = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_TYPE));
+
+                Location location = new Location(id, name, locationType, description, latitude, longitude);
+                location.setCoordinates(new Coordinate(latitude, longitude));
+                location.setDescription(description);
+
+                locations.add(location);
+            } while (cursor.moveToNext());
+        }
+    } catch (Exception e) {
+        Log.e(TAG, "fetchAllLocations failed: " + e.getMessage());
+    } finally {
+        if (cursor != null) cursor.close();
+        db.close();
+    }
+
+    return locations;
+}
 }

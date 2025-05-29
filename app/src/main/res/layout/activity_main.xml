@@ -127,13 +127,17 @@
             android:contentDescription="Add Location" />
 
         <ImageButton
-            android:id="@+id/locations_near_me_button"
+            android:id="@+id/locationsnear_btn"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_locations_near_me"
-            android:contentDescription="Locations Near Me" />
+            android:src="@drawable/locnear"
+            android:contentDescription="NearbyLocations"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            android:maxWidth="48dp"
+            android:maxHeight="48dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
