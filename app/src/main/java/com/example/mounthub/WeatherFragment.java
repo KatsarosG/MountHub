@@ -28,10 +28,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-
-
-
-
 public class WeatherFragment extends Fragment {
 
     public WeatherFragment() {
@@ -99,6 +95,7 @@ public class WeatherFragment extends Fragment {
                     String cityName = json.getString("name");
                     String temp = main.getString("temp");
                     String description = weather.getString("description");
+
                     String iconCode = weather.getString("icon");
 
                     TextView cityText = getView().findViewById(R.id.city_text);
@@ -130,9 +127,7 @@ public class WeatherFragment extends Fragment {
             else {
                 Toast.makeText(requireContext(), "Unable to fetch weather data", Toast.LENGTH_SHORT).show();
             }
-
         }
-
     }
 }
 
