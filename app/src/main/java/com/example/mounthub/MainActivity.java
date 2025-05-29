@@ -17,6 +17,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.mounthub.databinding.ActivityMainBinding;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
         // elements
         profileBtn = findViewById(R.id.profile_btn);
-        SearchView searchView = findViewById(R.id.searchView);
-        searchManage = new SearchManage(this, searchView);
+        TextInputEditText searchInput = findViewById(R.id.searchInput);
+        searchManage = new SearchManage(this, searchInput);
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each

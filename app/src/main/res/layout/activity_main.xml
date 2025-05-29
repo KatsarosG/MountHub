@@ -40,16 +40,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <SearchView
-            android:id="@+id/searchView"
-            android:layout_width="248dp"
-            android:layout_height="match_parent"
-            android:layout_margin="3dp"
-            android:background="#FFF9F9"
-            android:visibility="visible"
-            tools:visibility="visible">
-
-        </SearchView>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/searchInput"
+            android:layout_width="235dp"
+            android:layout_height="44dp"
+            android:background="@color/white"
+            android:hint="Search"
+            android:includeFontPadding="true"
+            android:paddingStart="15dp"
+            android:textColor="@color/black"
+            android:textColorHint="@android:color/darker_gray" />
 
         <Button
             android:id="@+id/button2"
