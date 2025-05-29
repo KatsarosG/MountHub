@@ -63,7 +63,10 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, LocationManager.class);
-            intent.putExtra("numberValue", loc.getId());
+            intent.putExtra("name", loc.getName());
+            intent.putExtra("type", loc.getLocationType());
+            intent.putExtra("lat", loc.getCoordinates().getLatitude());
+            intent.putExtra("lon", loc.getCoordinates().getLongitude());
             context.startActivity(intent);
         });
     }
