@@ -31,7 +31,7 @@
 
         </activity>
         <activity android:name=".NearbyLocActivity" />
-
+        <activity android:name=".LocationManager" />
         <activity
             android:name=".LoginActivity"
             android:exported="true"

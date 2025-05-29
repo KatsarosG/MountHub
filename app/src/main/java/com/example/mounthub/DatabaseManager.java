@@ -3,42 +3,33 @@ package com.example.mounthub;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseManager extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "mounthubDB.db";
-    private static final int DATABASE_VERSION = 3;
 
-    // users table
+    private static final String TAG = "DBManager";
+
+    private static final String DATABASE_NAME = "mounthub.db";
+    private static final int DATABASE_VERSION = 1;
+
+    // Table Users
     public static final String TABLE_USERS = "users";
-    public static final String COLUMN_USER_ID = "id";
-    public static final String COLUMN_USER_USERNAME = "username";
-    public static final String COLUMN_USER_EMAIL = "email";
-    public static final String COLUMN_USER_PASSWORD = "password";
-    public static final String COLUMN_USER_INFO = "info";
+    public static final String COL_USER_ID = "id";
+    public static final String COL_USERNAME = "username";
+    public static final String COL_EMAIL = "email";
 
-    // SQL statement to create your table
-    private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + TABLE_USERS + " (" +
-                    COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    COLUMN_USER_USERNAME + " TEXT UNIQUE NOT NULL," +
-                    COLUMN_USER_EMAIL + " TEXT UNIQUE NOT NULL," +
-                    COLUMN_USER_PASSWORD + " TEXT," +
-                    COLUMN_USER_INFO + " TEXT)";
-
-    private static final String DUMMY_USER = "INSERT INTO " + TABLE_USERS + " (" +
-            COLUMN_USER_USERNAME + ", " +
-            COLUMN_USER_EMAIL + ", " +
-            COLUMN_USER_PASSWORD + ", " +
-            COLUMN_USER_INFO + ") VALUES ('test', 'test', 'test', 'test')";
-
-    private static final String SQL_DELETE_ENTRIES =
-            "DROP TABLE IF EXISTS " + TABLE_USERS;
+    // Table Locations
+    public static final String TABLE_LOCATIONS = "locations";
+    public static final String COL_LOCATION_ID = "id";
+    public static final String COL_LOCATION_NAME = "name";
+    public static final String COL_LOCATION_LATITUDE = "latitude";
+    public static final String COL_LOCATION_LONGITUDE = "longitude";
+    public static final String COL_LOCATION_DESCRIPTION = "description";
 
     public DatabaseManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -46,122 +37,100 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // This method is called when the database is created for the first time.
-        db.execSQL(SQL_CREATE_ENTRIES);
-        db.execSQL(DUMMY_USER);
+        // Create Users Table
+        String createUsersTable = "CREATE TABLE " + TABLE_USERS + " (" +
+                COL_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COL_USERNAME + " TEXT NOT NULL," +
+                COL_EMAIL + " TEXT NOT NULL" +
+                ")";
+        db.execSQL(createUsersTable);
+
+        // Create Locations Table
+        String createLocationsTable = "CREATE TABLE " + TABLE_LOCATIONS + " (" +
+                COL_LOCATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COL_LOCATION_NAME + " TEXT NOT NULL," +
+                COL_LOCATION_LATITUDE + " REAL NOT NULL," +
+                COL_LOCATION_LONGITUDE + " REAL NOT NULL," +
+                COL_LOCATION_DESCRIPTION + " TEXT" +
+                ")";
+        db.execSQL(createLocationsTable);
+
+        // Optionally insert some dummy data for testing
+        insertDummyLocations(db);
+        insertDummyUsers(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-         db.execSQL(SQL_DELETE_ENTRIES);
-         onCreate(db);
+        // Drop older tables and recreate if upgrading database version
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        onCreate(db);
     }
 
-    public long addUser(User user) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
+    // Example to insert dummy locations during creation
+    private void insertDummyLocations(SQLiteDatabase db) {
+        ContentValues values = new ContentValues();
 
-        // TODO(optional): hash password before putting into database
+        values.put(COL_LOCATION_NAME, "Mount Everest");
+        values.put(COL_LOCATION_LATITUDE, 27.9881);
+        values.put(COL_LOCATION_LONGITUDE, 86.9250);
+        values.put(COL_LOCATION_DESCRIPTION, "Highest mountain in the world.");
+        db.insert(TABLE_LOCATIONS, null, values);
 
-        cv.put(COLUMN_USER_USERNAME, user.getUsername());
-        cv.put(COLUMN_USER_EMAIL, user.getEmail());
-        cv.put(COLUMN_USER_PASSWORD, user.getPassword());
-        cv.put(COLUMN_USER_INFO, user.getInfo());
+        values.clear();
 
-        long userId;
-        try {
-            userId = db.insertOrThrow(TABLE_USERS, null, cv);
-        } catch (SQLiteConstraintException e) {
-            if (e.getMessage().contains("UNIQUE constraint failed: users.username")) {
-                // Username already exists
-                return -1;
-            }
-
-            if (e.getMessage().contains("UNIQUE constraint failed: users.email")) {
-                // Email already exists
-                return -2;
-            }
-
-            Log.e("Database Error", "Error inserting user: " + e.getMessage());
-            return 0;
-        } finally {
-            db.close();
-        }
-
-        // clean
-        db.close();
-
-        return userId;
+        values.put(COL_LOCATION_NAME, "K2");
+        values.put(COL_LOCATION_LATITUDE, 35.8808);
+        values.put(COL_LOCATION_LONGITUDE, 76.5158);
+        values.put(COL_LOCATION_DESCRIPTION, "Second highest mountain.");
+        db.insert(TABLE_LOCATIONS, null, values);
     }
 
-    public boolean deleteUser(User user) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String whereClause = COLUMN_USER_ID + " = ?";
-        String[] whereArgs = {String.valueOf(user.getId())};
-        int success = db.delete(TABLE_USERS, whereClause, whereArgs);
+    private void insertDummyUsers(SQLiteDatabase db) {
+        ContentValues values = new ContentValues();
 
-        // clean
-        db.close();
+        values.put(COL_USERNAME, "user1");
+        values.put(COL_EMAIL, "user1@example.com");
+        db.insert(TABLE_USERS, null, values);
 
-        return success > 0;
+        values.clear();
+
+        values.put(COL_USERNAME, "user2");
+        values.put(COL_EMAIL, "user2@example.com");
+        db.insert(TABLE_USERS, null, values);
     }
 
-    public User fetchUser(String username) {
+    // Fetch all locations from the database
+    public List<Location> fetchAllLocations() {
+        List<Location> locations = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        User user = null;
+
+        String selectQuery = "SELECT * FROM " + TABLE_LOCATIONS;
+
         Cursor cursor = null;
-
         try {
-            String[] projection = {
-                    COLUMN_USER_ID,
-                    COLUMN_USER_USERNAME,
-                    COLUMN_USER_EMAIL,
-                    COLUMN_USER_PASSWORD,
-                    COLUMN_USER_INFO
-            };
+            cursor = db.rawQuery(selectQuery, null);
 
-            String selection = COLUMN_USER_USERNAME + " = ?";
-            String[] selectionArgs = { username };
+            if (cursor.moveToFirst()) {
+                do {
+                    Location loc = new Location();
+                    loc.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COL_LOCATION_ID)));
+                    loc.setName(cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_NAME)));
+                    loc.setLatitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LOCATION_LATITUDE)));
+                    loc.setLongitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LOCATION_LONGITUDE)));
+                    loc.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_DESCRIPTION)));
 
-            cursor = db.query(
-                    TABLE_USERS,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    null,
-                    null,
-                    null
-            );
-
-            if (cursor != null && cursor.moveToFirst()) {
-                int idIndex = cursor.getColumnIndexOrThrow(COLUMN_USER_ID);
-//                int usernameIndex = cursor.getColumnIndexOrThrow(COLUMN_USER_USERNAME);
-                int emailIndex = cursor.getColumnIndexOrThrow(COLUMN_USER_EMAIL);
-                int passwordIndex = cursor.getColumnIndexOrThrow(COLUMN_USER_PASSWORD);
-                int infoIndex = cursor.getColumnIndexOrThrow(COLUMN_USER_INFO);
-
-                int id = cursor.getInt(idIndex);
-                String email = cursor.getString(emailIndex);
-                String password = cursor.getString(passwordIndex);
-                String info = cursor.getString(infoIndex);
-
-                user = new User(id, username, email, password, info);
-            }
-            else {
-                return null;
+                    locations.add(loc);
+                } while (cursor.moveToNext());
             }
         } catch (Exception e) {
-            Log.e("Database Error", "Error fetching user by name: " + e.getMessage());
+            Log.e(TAG, "fetchAllLocations failed: " + e.getMessage());
         } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
+            if (cursor != null) cursor.close();
+            // db.close(); // Don't close DB here; SQLiteOpenHelper manages it
         }
-        return user;
-    }
 
-//    public boolean editUser(User user) {
-//        SQLiteDatabase
-//    }
+        return locations;
+    }
 }

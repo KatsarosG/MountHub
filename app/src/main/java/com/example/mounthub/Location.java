@@ -7,7 +7,7 @@ public class Location {
     private String locationType;
     private String description;
     private String info;
-    private float distance; // <-- Add this
+    private float distance;
 
     // Existing constructor
     public Location(int ID, String name, String locationType) {
@@ -37,23 +37,26 @@ public class Location {
         }
     }
 
+    public int getId() { return ID; }
+
     public String getName() {
         return name;
+    }
+
+    public String getLocationType() { return  locationType; }
+
+    public void setCoordinates(Coordinate coordinates) {
+        this.coordinates = coordinates;
     }
 
     public Coordinate getCoordinates() {
         return coordinates;
     }
 
-    public void setCoordinates(Coordinate coordinates) {
-        this.coordinates = coordinates;
-    }
+    public void setDistance(float distance) { this.distance = distance;}
 
     public float getDistance() {
         return distance;
     }
 
-    public void setDistance(float distance) {
-        this.distance = distance;
-    }
 }
