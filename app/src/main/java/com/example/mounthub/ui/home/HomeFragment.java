@@ -78,6 +78,7 @@ public class HomeFragment extends Fragment implements MapListener {
     public List<GeoPoint> markedTrail = new ArrayList<>();
     public List<Marker> trailMarkers = new ArrayList<>();
     public List<Polyline> trailPolylines = new ArrayList<>();
+    public boolean recordPaused = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -375,6 +376,9 @@ public class HomeFragment extends Fragment implements MapListener {
 //                    submitTrail(); // Call your submit method
                     recordMode = false; // Exit record mode
                 })
+                .setNeutralButton(recordPaused ? "Continue" : "Paused", (dialog, which) -> {
+                    toggleRecording();
+                })
                 .setNegativeButton("Cancel", (dialog, which) -> {
                     recordMode = false;
 
@@ -415,5 +419,9 @@ public class HomeFragment extends Fragment implements MapListener {
             window.setAttributes(params);
 
         }
+    }
+
+    private void toggleRecording() {
+        recordMode = !recordMode;
     }
 }
