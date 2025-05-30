@@ -66,8 +66,34 @@ public class DatabaseManager extends SQLiteOpenHelper {
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_USERS;
 
+    private List<Location> locations = List.of(
+            new Location(1, "Refuge A", new Coordinate(38.279, 21.776), "Refuge"),
+            new Location(2, "Spring B", new Coordinate(38.288, 21.789), "Water Source"),
+            new Location(3, "Hill C", new Coordinate(38.283, 21.795), "Mountain"),
+            new Location(4, "Camp D", new Coordinate(38.292, 21.781), "Shelter"),
+            new Location(5, "Village E", new Coordinate(38.280, 21.788), "Village"),
+            new Location(6, "Pond F", new Coordinate(38.287, 21.774), "Water Source"),
+            new Location(7, "Peak G", new Coordinate(38.282, 21.785), "Mountain"),
+            new Location(8, "Shelter H", new Coordinate(38.290, 21.792), "Shelter"),
+            new Location(9, "Refuge I", new Coordinate(38.278, 21.779), "Refuge"),
+            new Location(10, "Spring J", new Coordinate(38.289, 21.784), "Water Source"),
+            new Location(11, "Mountain K", new Coordinate(38.285, 21.780), "Mountain"),
+            new Location(12, "Village L", new Coordinate(38.281, 21.789), "Village"),
+            new Location(13, "Shelter M", new Coordinate(38.284, 21.776), "Shelter"),
+            new Location(14, "Pond N", new Coordinate(38.286, 21.787), "Water Source"),
+            new Location(15, "Refuge O", new Coordinate(38.280, 21.782), "Refuge"),
+            new Location(16, "Village P", new Coordinate(38.291, 21.779), "Village"),
+            new Location(17, "Peak Q", new Coordinate(38.283, 21.790), "Mountain"),
+            new Location(18, "Shelter R", new Coordinate(38.279, 21.783), "Shelter"),
+            new Location(19, "Spring S", new Coordinate(38.288, 21.785), "Water Source"),
+            new Location(20, "Village T", new Coordinate(38.282, 21.788), "Village"),
+            new Location(21, "Refuge U", new Coordinate(38.280, 21.777), "Refuge")
+    );
+
+
     public DatabaseManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
     }
 
     @Override
@@ -91,7 +117,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
         insertDummyUsers(db);
         insertDummyLocations(db);
-      
+
         // This method is called when the database is created for the first time.
         db.execSQL(SQL_CREATE_ENTRIES);
         db.execSQL(DUMMY_USER);
@@ -242,21 +268,51 @@ public class DatabaseManager extends SQLiteOpenHelper {
     }
 
     public Trail[] searchForTrails(String query) {
+        Log.d("SearchManage", "Search query/tab: " + query + "/Trails");
+        // Dummy code instead of call to DataBase:
         List<Coordinate> route1 = Arrays.asList(new Coordinate(38.1, 23.7), new Coordinate(38.2, 23.8));
+        List<Coordinate> route2 = Arrays.asList(new Coordinate(37.9, 23.6), new Coordinate(38.0, 23.5));
+        List<Coordinate> route3 = Arrays.asList(new Coordinate(39.1, 22.7), new Coordinate(39.2, 22.8));
+        List<Coordinate> route4 = Arrays.asList(new Coordinate(40.1, 21.7), new Coordinate(40.2, 21.8));
+
         List<String> photos = Arrays.asList("trail1.jpg", "trail2.jpg");
-        List<Integer> reviewIds = Arrays.asList(101, 102);
+
+        List<Integer> reviewIds = Arrays.asList(101, 102, 103);
+
         List<Excursion> excursions = new ArrayList<>();
-        Trail trail = new Trail(1, "Dummy Trail", route1, 5, Trail.Difficulty.MEDIUM, "Sample", photos, reviewIds, excursions, 0);
-        return new Trail[]{trail};
+
+        Trail tempTrail1 = new Trail(1, "Mount Olympus Trail", route1, 5, Trail.Difficulty.HARD,
+                "Scenic trail up Mount Olympus", photos, reviewIds, excursions, 16);
+
+        Trail tempTrail2 = new Trail(2, "Parnitha Forest Walk", route2, 2, Trail.Difficulty.EASY,
+                "Leisure walk through Parnitha forest", photos, reviewIds, excursions, 5);
+
+        Trail tempTrail3 = new Trail(3, "Zagori Stone Bridge Path", route3, 3, Trail.Difficulty.MEDIUM,
+                "Historic trail with stone bridges", photos, reviewIds, excursions, 8);
+
+        Trail tempTrail4 = new Trail(4, "Vikos Gorge Hike", route4, 6, Trail.Difficulty.HARD,
+                "Trek through the famous Vikos Gorge", photos, reviewIds, excursions, 12);
+
+        // return found trails:
+        return new Trail[] { tempTrail1, tempTrail2, tempTrail3, tempTrail4 };
     }
 
     public Location[] searchForLocations(String query) {
-        Location loc = new Location(1, "Mount Olympus", new Coordinate(38.1, 23.7), "Mountain");
-        return new Location[]{loc};
+        Log.d("SearchManage", "Search query/tab: " + query + "/Locations");
+        Location loc1 = new Location(1, "Mount Olympus","Mountain");
+        Location loc2 = new Location(2, "Samaria Gorge", "Gorge");
+        Location loc3 = new Location(3, "Lake Plastira", "Lake");
+        Location loc4 = new Location(4, "Vikos Gorge", "Canyon");
+
+        return new Location[] { loc1, loc2, loc3, loc4 };
     }
 
     public User[] searchForUsers(String query) {
-        return new User[]{new User(1, "George123", "giorgos@example.com", "pass", "info")};
+        Log.d("SearchManage", "Search query/tab: " + query + "/Users");
+        User user1 = new User(1, "George123", "giorgos@example.com", "passsssword", "I like maps!");
+        User user2 = new User(1, "Hikerman", "hikehike@example.com", "passsssword123", "I HIKE ALL THE TIME");
+        User user3 = new User(1, "GirlBoss", "girlboss@example.com", "passsssword212121", "I like maps too!");
+        return new User[] {user1, user2, user3};
     }
 
     public boolean isLocDuplicate(String name, String type, Coordinate coords, Context ctx) {
@@ -293,38 +349,38 @@ public class DatabaseManager extends SQLiteOpenHelper {
 //        SQLiteDatabase
 //    }
 public List<Location> fetchAllLocations() {
-    List<Location> locations = new ArrayList<>();
-    SQLiteDatabase db = this.getReadableDatabase();
-
-    String query = "SELECT * FROM " + TABLE_LOCATIONS;
-    Cursor cursor = null;
-
-    try {
-        cursor = db.rawQuery(query, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_LOCATION_ID));
-                String name = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_NAME));
-                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LOCATION_LATITUDE));
-                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LOCATION_LONGITUDE));
-                String description = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_DESCRIPTION));
-                String locationType = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_TYPE));
-
-                Location location = new Location(id, name, locationType, description, latitude, longitude);
-                location.setCoordinates(new Coordinate(latitude, longitude));
-                location.setDescription(description);
-
-                locations.add(location);
-            } while (cursor.moveToNext());
-        }
-    } catch (Exception e) {
-        Log.e(TAG, "fetchAllLocations failed: " + e.getMessage());
-    } finally {
-        if (cursor != null) cursor.close();
-        db.close();
-    }
+//        List<Location> locations = new ArrayList<>();
+//        SQLiteDatabase db = this.getReadableDatabase();
+//
+//        String query = "SELECT * FROM " + TABLE_LOCATIONS;
+//        Cursor cursor = null;
+//
+//        try {
+//        cursor = db.rawQuery(query, null);
+//
+//        if (cursor.moveToFirst()) {
+//            do {
+//                int id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_LOCATION_ID));
+//                String name = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_NAME));
+//                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LOCATION_LATITUDE));
+//                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LOCATION_LONGITUDE));
+//                String description = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_DESCRIPTION));
+//                String locationType = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_TYPE));
+//
+//                Location location = new Location(id, name, locationType, description, latitude, longitude);
+//                location.setCoordinates(new Coordinate(latitude, longitude));
+//                location.setDescription(description);
+//
+//                locations.add(location);
+//            } while (cursor.moveToNext());
+//        }
+//    } catch (Exception e) {
+//        Log.e(TAG, "fetchAllLocations failed: " + e.getMessage());
+//    } finally {
+//        if (cursor != null) cursor.close();
+//        db.close();
+//      }
 
     return locations;
-}
+    }
 }

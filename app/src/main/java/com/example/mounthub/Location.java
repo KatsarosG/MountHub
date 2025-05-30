@@ -54,23 +54,20 @@ public class Location {
     public void setDistance(float distance) { this.distance = distance; }
 
     // Utility: Haversine formula to calculate distance between two coordinates
-    public static void distanceBetween(double userLat, double userLon, double latitude, double longitude, float[] result) {
+    public static float distanceBetween(double userLat, double userLon, double lat2, double lon2) {
         final int EARTH_RADIUS = 6371000; // meters
 
-        double dLat = Math.toRadians(latitude - userLat);
-        double dLon = Math.toRadians(longitude - userLon);
+        double dLat = Math.toRadians(lat2 - userLat);
+        double dLon = Math.toRadians(lon2 - userLon);
 
         double lat1 = Math.toRadians(userLat);
-        double lat2 = Math.toRadians(latitude);
+        lat2 = Math.toRadians(lat2);
 
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        float distance = (float) (EARTH_RADIUS * c);
-
-        if (result != null && result.length > 0) {
-            result[0] = distance;
-        }
+        return (float) (EARTH_RADIUS * c);
     }
+
 }
