@@ -24,6 +24,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -71,11 +72,12 @@ public class HomeFragment extends Fragment implements MapListener {
     DatabaseManager databaseManager;
     boolean displayingPins = false;
     private boolean pinMode = false, editMode = false;
+    public  boolean recordMode = false;
     private LocationHandler locationHandler;
 
-    private List<GeoPoint> markedTrail = new ArrayList<>();
-    private List<Marker> trailMarkers = new ArrayList<>();
-    private List<Polyline> trailPolylines = new ArrayList<>();
+    public List<GeoPoint> markedTrail = new ArrayList<>();
+    public List<Marker> trailMarkers = new ArrayList<>();
+    public List<Polyline> trailPolylines = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -304,37 +306,6 @@ public class HomeFragment extends Fragment implements MapListener {
 
         return marker;
     }
-    private void setupMyLocationOverlay() {
-        locationOverlay = new MyLocationNewOverlay(
-                new GpsMyLocationProvider(requireContext()),
-                mapView
-        );
-        // Get the default arrow icon (Vector Drawable)
-        Drawable arrowIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.arrow_icon);
-
-        // Change its color programmatically
-        if (arrowIconDrawable != null) {
-            Bitmap arrowIconBitmap = drawableToBitmap(arrowIconDrawable);
-            locationOverlay.setDirectionArrow(arrowIconBitmap, arrowIconBitmap);  // Apply the colored arrow
-        }
-        locationOverlay.enableMyLocation();
-        locationOverlay.enableFollowLocation();
-        mapView.getOverlays().add(locationOverlay);
-    }
-
-    private Bitmap drawableToBitmap(Drawable drawable) {
-        // Create a Bitmap with the same size as the drawable
-        int width = drawable.getIntrinsicWidth();
-        int height = drawable.getIntrinsicHeight();
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-
-        // Create a Canvas and draw the drawable onto the bitmap
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
-    }
 
     public void startAddLocationMode() {
         if (!pinMode) {
@@ -357,10 +328,57 @@ public class HomeFragment extends Fragment implements MapListener {
                 .setNegativeButton("Cancel", (dialog, which) -> {
                     editMode = false;
 
-                    // Remove all trail markers from map
-                    for (Marker marker : trailMarkers) {
-                        mainMap.mapView.getOverlays().remove(marker);
+                    // Remove all trail polylines from map
+                    for (Polyline polyline : trailPolylines) {
+                        mainMap.mapView.getOverlays().remove(polyline);
                     }
+
+                    // Clear the lists
+                    trailPolylines.clear();
+
+                    // Clear the trail points list
+                    markedTrail.clear();
+
+                    mainMap.mapView.invalidate();
+                })
+                .setCancelable(false) // Prevent dismissing by tapping outside
+                .show();
+
+        // Configure dialog window
+        Window window = addTrailDialog.getWindow();
+        if (window != null) {
+            // remove backdrop
+            window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+            // Make background interactable
+            window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+
+            // Position dialog at bottom of screen
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.gravity = Gravity.BOTTOM;
+            params.width = WindowManager.LayoutParams.MATCH_PARENT;
+            params.y = 50; // Add some margin from bottom
+            window.setAttributes(params);
+
+        }
+    }
+
+    public void recordMode() {
+        recordMode = true;
+
+        AlertDialog addTrailDialog = new AlertDialog.Builder(requireContext())
+                .setTitle("Recording...")
+                .setMessage("Just walk🤙")
+                .setPositiveButton("Submit", (dialog, which) -> {
+                    // Handle submit action
+//                    submitTrail(); // Call your submit method
+                    recordMode = false; // Exit record mode
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    recordMode = false;
+
+//                    Log.d("MapUpdate", "Map zoomed. New zoom level: " + trailPolylines);
 
                     // Remove all trail polylines from map
                     for (Polyline polyline : trailPolylines) {
@@ -396,19 +414,6 @@ public class HomeFragment extends Fragment implements MapListener {
             params.y = 50; // Add some margin from bottom
             window.setAttributes(params);
 
-        }
-    }
-
-    private void requestPermissionsIfNecessary() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            requestPermissions(
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_PERMISSIONS_REQUEST_CODE
-            );
-        } else {
-            setupMyLocationOverlay();
         }
     }
 }
