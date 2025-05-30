@@ -1,6 +1,7 @@
 package com.example.mounthub;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Trail {
@@ -15,6 +16,7 @@ public class Trail {
 	private List<Integer> reviews;
 	private List<Excursion> excursions;
 	private int distance;
+
 
 	// Enum for difficulty
 	public enum Difficulty {
@@ -37,6 +39,7 @@ public class Trail {
 		this.distance = distance;
 	}
 
+
     public Trail(int ID, String name, List<Coordinate> routeLine,
                  Difficulty difficulty, String info) {
 //				Duration duration,
@@ -44,7 +47,7 @@ public class Trail {
         this.ID = ID;
         this.name = name;
         this.routeLine = routeLine;
-//		this.duration = duration;
+		this.duration = duration;
         this.difficulty = difficulty;
         this.info = info;
 //		this.photoPaths = photoPaths;

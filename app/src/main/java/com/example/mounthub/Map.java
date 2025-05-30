@@ -5,24 +5,29 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import androidx.core.content.ContextCompat;
 
-import com.example.mounthub.R;
+import com.example.mounthub.ui.home.HomeFragment;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
+import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Map {
@@ -101,7 +106,37 @@ public class Map {
         locationOverlay = new MyLocationNewOverlay(
                 new GpsMyLocationProvider(context),
                 mapView
-        );
+        ) {
+            @Override
+            public void onLocationChanged(android.location.Location location, IMyLocationProvider source) {
+                super.onLocationChanged(location, source);
+
+                HomeFragment homeFragment = (HomeFragment) fragment;
+
+                if (homeFragment.recordMode) {
+                    // Handle location change here
+                    double latitude = location.getLatitude();
+                    double longitude = location.getLongitude();
+
+                    GeoPoint newUserLocation = new GeoPoint(latitude, longitude);
+//                mapView.getController().setCenter(newUserLocation);
+//                mapView.getController().setZoom(15.0);
+
+                    homeFragment.markedTrail.add(newUserLocation);
+                    Polyline dynamicLine = new Polyline();
+                    dynamicLine.setPoints(homeFragment.markedTrail);
+                    dynamicLine.getOutlinePaint().setColor(Color.RED);
+                    dynamicLine.getOutlinePaint().setStrokeWidth(15.0f);
+
+                    // save polyline instance
+                    homeFragment.trailPolylines.add(dynamicLine);
+
+                    mapView.getOverlays().add(dynamicLine);
+                    mapView.invalidate();
+                }
+            }
+        };
+
         // Get the default arrow icon (Vector Drawable)
         Drawable arrowIconDrawable = ContextCompat.getDrawable(context, R.drawable.arrow_icon);
 
@@ -114,6 +149,26 @@ public class Map {
         locationOverlay.enableFollowLocation();
         mapView.getOverlays().add(locationOverlay);
     }
+
+    public MyLocationNewOverlay returnLocation() {
+        locationOverlay = new MyLocationNewOverlay(
+                new GpsMyLocationProvider(context),
+                mapView
+        );
+
+        Drawable arrowIconDrawable = ContextCompat.getDrawable(context, R.drawable.arrow_icon);
+        if (arrowIconDrawable != null) {
+            Bitmap arrowIconBitmap = drawableToBitmap(arrowIconDrawable);
+            locationOverlay.setDirectionArrow(arrowIconBitmap, arrowIconBitmap);
+        }
+
+        locationOverlay.enableMyLocation();
+        locationOverlay.enableFollowLocation();
+        mapView.getOverlays().add(locationOverlay);
+
+        return locationOverlay;
+    }
+
 
     private Bitmap drawableToBitmap(Drawable drawable) {
         // Create a Bitmap with the same size as the drawable

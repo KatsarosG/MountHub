@@ -22,10 +22,25 @@ public class LocationManage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
 
+        int id = getIntent().getIntExtra("numberValue", 0);
+        DatabaseManager db = new DatabaseManager(this);
+
         Intent intent = getIntent();
-        int locationId = intent.getIntExtra("numberValue", 0);
+
+        String nameStr = intent.getStringExtra("name");
+        String typeStr = intent.getStringExtra("type");
+        double lat = intent.getDoubleExtra("lat", 0);
+        double lon = intent.getDoubleExtra("lon", 0);
+
+        TextView name = findViewById(R.id.location_name);
+        TextView type = findViewById(R.id.location_type);
+        TextView coords = findViewById(R.id.location_coords);
+
+        name.setText(nameStr);
+        type.setText(typeStr);
+        coords.setText("Lat: " + lat + ", Lon: " + lon);
 
         DatabaseManager databaseManager = new DatabaseManager(this.getBaseContext());
-        databaseManager.getLocationDetails(locationId);
+        databaseManager.getLocationDetails(id);
     }
 }

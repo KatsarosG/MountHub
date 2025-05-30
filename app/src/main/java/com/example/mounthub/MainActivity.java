@@ -8,6 +8,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.SearchView;
 
+import com.example.mounthub.ui.home.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,8 +52,26 @@ public class MainActivity extends AppCompatActivity {
         weatherButton = findViewById(R.id.weather_button);
         recordTrailButton = findViewById(R.id.record_trail_button);
         addLocationButton = findViewById(R.id.add_location_button);
-        locationsNearMeButton = findViewById(R.id.locations_near_me_button);
+        locationsNearMeButton = findViewById(R.id.locationsnear_btn);
         addTrailWithPinsButton = findViewById(R.id.add_trail_with_pins_button);
+
+        addLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Use FragmentManager to get HomeFragment
+                HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.nav_host_fragment_activity_main)
+                        .getChildFragmentManager()
+                        .getFragments()
+                        .get(0);  // get(0) is safe if HomeFragment is loaded first
+                
+
+
+                if (homeFragment != null) {
+                    homeFragment.startAddLocationMode(); // create this method in HomeFragment
+                }
+            }
+        });
 
         // to profile activity
         profileBtn.setOnClickListener(new View.OnClickListener() {
@@ -79,29 +98,54 @@ public class MainActivity extends AppCompatActivity {
         recordTrailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Record trail clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
+                // Use FragmentManager to get HomeFragment
+                HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.nav_host_fragment_activity_main)
+                        .getChildFragmentManager()
+                        .getFragments()
+                        .get(0);
 
-        addLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Add location clicked", Toast.LENGTH_SHORT).show();
+                if (homeFragment != null) {
+                    homeFragment.recordMode();
+                }
             }
         });
 
         locationsNearMeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Locations near me clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, NearbyLocActivity.class);
+                startActivity(intent);
             }
         });
+
 
         addTrailWithPinsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Add trail with pins clicked", Toast.LENGTH_SHORT).show();
+                // Use FragmentManager to get HomeFragment
+                HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.nav_host_fragment_activity_main)
+                        .getChildFragmentManager()
+                        .getFragments()
+                        .get(0);  // get(0) is safe if HomeFragment is loaded first
+
+
+
+                if (homeFragment != null) {
+                    homeFragment.startAddTrailMode(); // create this method in HomeFragment
+                }
             }
         });
     }
+    public void goToNotifScreen(View v){
+        Intent i = new Intent(this, NotificationsActivity.class);
+        startActivity(i);
+    }
+
+    public void goToSOSScreen(View v){
+        Intent i = new Intent(this, InfoAndSafetyInstructionsScreen.class);
+        startActivity(i);
+    }
+
 }
