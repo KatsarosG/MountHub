@@ -11,6 +11,9 @@ import com.google.android.material.tabs.TabLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class SearchResultsActivity extends AppCompatActivity {
     private String searchQuery;
     private int selectedTabIndex = 0; // 0: Trails, 1: Locations, 2: Users
@@ -58,7 +61,8 @@ public class SearchResultsActivity extends AppCompatActivity {
                         userRecyclerView.setVisibility(View.INVISIBLE);
                         locationRecyclerView.setLayoutManager(new LinearLayoutManager(context));
                         Location[] resultLocations = dbManager.searchForLocations(searchQuery);
-                        locationAdapter = new LocationAdapter(resultLocations);
+                        List<Location> locationList = arrayToList(resultLocations);
+                        locationAdapter = new LocationAdapter(locationList, context);
                         locationRecyclerView.setAdapter(locationAdapter);
                         locationRecyclerView.setVisibility(View.VISIBLE);
                         break;
@@ -96,4 +100,9 @@ public class SearchResultsActivity extends AppCompatActivity {
         locationRecyclerView.setAdapter(locationAdapter);
         userRecyclerView.setAdapter(userAdapter);
     }
+
+    public static <T> List<T> arrayToList(T[] array) {
+        return Arrays.asList(array);
+    }
+
 }
