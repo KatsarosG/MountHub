@@ -1,5 +1,6 @@
 package com.example.mounthub.ui.home;
 
+import com.example.mounthub.AddTrailActivity;
 import com.example.mounthub.LocationHandler;
 
 import com.example.mounthub.Coordinate;
@@ -7,6 +8,7 @@ import com.example.mounthub.DatabaseManager;
 import com.example.mounthub.Location;
 import com.example.mounthub.LocationManage;
 
+import com.example.mounthub.MainActivity;
 import com.example.mounthub.R;
 import com.example.mounthub.Trail;
 import com.example.mounthub.TrailActionsPopup;
@@ -23,6 +25,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -322,9 +325,8 @@ public class HomeFragment extends Fragment implements MapListener {
                 .setTitle("Add TrailPoints")
                 .setMessage("Plan a route by putting pins on the map")
                 .setPositiveButton("Submit", (dialog, which) -> {
-                    // Handle submit action
-//                    submitTrail(); // Call your submit method
-                    editMode = false; // Exit edit mode
+                    submitTrail();
+                    editMode = false; // exit
                 })
                 .setNegativeButton("Cancel", (dialog, which) -> {
                     editMode = false;
@@ -373,8 +375,8 @@ public class HomeFragment extends Fragment implements MapListener {
                 .setMessage("Just walk🤙")
                 .setPositiveButton("Submit", (dialog, which) -> {
                     // Handle submit action
-//                    submitTrail(); // Call your submit method
-                    recordMode = false; // Exit record mode
+                    submitTrail();
+                    recordMode = false; // exit
                 })
                 .setNeutralButton(recordPaused ? "Continue" : "Paused", (dialog, which) -> {
                     toggleRecording();
@@ -423,5 +425,12 @@ public class HomeFragment extends Fragment implements MapListener {
 
     private void toggleRecording() {
         recordMode = !recordMode;
+    }
+
+    private void submitTrail() {
+        Intent intentObj = new Intent(requireContext(), AddTrailActivity.class);
+        intentObj.putParcelableArrayListExtra("route", (ArrayList<GeoPoint>) markedTrail);
+
+        startActivity(intentObj);
     }
 }

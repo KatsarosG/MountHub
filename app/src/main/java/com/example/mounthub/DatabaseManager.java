@@ -360,6 +360,10 @@ public class DatabaseManager extends SQLiteOpenHelper {
 //        );
     }
 
+    public void addTrail(Trail trail) {
+        // TODO: Add trail to database
+    }
+
     public Location getLocationDetails(int locationId) {
         return  new Location(1, "Loc1", new Coordinate(38.24630040417543, 21.734617569821097), "mountain");
     }

@@ -25,6 +25,11 @@
             android:name=".InfoAndSafetyInstruction"
             android:exported="false" />
         <activity
+            android:name=".AddTrailActivity"
+            android:theme="@style/Theme.ActionBar"
+            android:parentActivityName=".MainActivity"
+            android:exported="false" />
+        <activity
             android:name=".InfoAndSafetyInstructionsScreen"
             android:exported="false" />
         <activity
