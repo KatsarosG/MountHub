@@ -58,6 +58,7 @@ public class SearchResultsActivity extends AppCompatActivity {
                         break;
                     case 1:
                         trailRecyclerView.setVisibility(View.INVISIBLE);
+                        userRecyclerView.setVisibility(View.INVISIBLE);
                         locationRecyclerView.setLayoutManager(new LinearLayoutManager(context));
                         Location[] resultLocations = dbManager.searchForLocations(searchQuery);
                         List<Location> locationList = arrayToList(resultLocations);

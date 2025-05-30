@@ -18,7 +18,10 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -38,6 +41,7 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
@@ -52,6 +56,9 @@ import com.example.mounthub.Map;
 
 public class HomeFragment extends Fragment implements MapListener {
 
+    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
+    private MapView mapView;
+    private MyLocationNewOverlay locationOverlay;
     private static final double ZOOM_BOUND = 16.15;
     private final List<Marker> allMarkers = new ArrayList<>();
     private Map mainMap;
@@ -66,6 +73,7 @@ public class HomeFragment extends Fragment implements MapListener {
 
         Configuration.getInstance().load(requireContext(), PreferenceManager.getDefaultSharedPreferences(requireContext()));
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+
 
         Button buttonLayers = root.findViewById(R.id.button4);
         MapView mapView = root.findViewById(R.id.map);
@@ -254,11 +262,55 @@ public class HomeFragment extends Fragment implements MapListener {
 
         return marker;
     }
+    private void setupMyLocationOverlay() {
+        locationOverlay = new MyLocationNewOverlay(
+                new GpsMyLocationProvider(requireContext()),
+                mapView
+        );
+        // Get the default arrow icon (Vector Drawable)
+        Drawable arrowIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.arrow_icon);
+
+        // Change its color programmatically
+        if (arrowIconDrawable != null) {
+            Bitmap arrowIconBitmap = drawableToBitmap(arrowIconDrawable);
+            locationOverlay.setDirectionArrow(arrowIconBitmap, arrowIconBitmap);  // Apply the colored arrow
+        }
+        locationOverlay.enableMyLocation();
+        locationOverlay.enableFollowLocation();
+        mapView.getOverlays().add(locationOverlay);
+    }
+
+    private Bitmap drawableToBitmap(Drawable drawable) {
+        // Create a Bitmap with the same size as the drawable
+        int width = drawable.getIntrinsicWidth();
+        int height = drawable.getIntrinsicHeight();
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        // Create a Canvas and draw the drawable onto the bitmap
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
+    }
 
     public void startAddLocationMode() {
         if (!pinMode) {
             locationHandler.startAddLoc(requireContext());
             pinMode = true;
+        }
+    }
+
+    private void requestPermissionsIfNecessary() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermissions(
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_PERMISSIONS_REQUEST_CODE
+            );
+        } else {
+            setupMyLocationOverlay();
         }
     }
 }

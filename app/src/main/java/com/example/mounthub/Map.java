@@ -8,12 +8,9 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import androidx.core.content.ContextCompat;
-
-import com.example.mounthub.R;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.tileprovider.tilesource.XYTileSource;
@@ -22,7 +19,6 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import java.util.Date;
 import java.util.List;
 
 public class Map {
@@ -97,7 +93,7 @@ public class Map {
         }
     }
 
-    public void setupMyLocationOverlay() {
+    public MyLocationNewOverlay setupMyLocationOverlay() {
         locationOverlay = new MyLocationNewOverlay(
                 new GpsMyLocationProvider(context),
                 mapView
@@ -113,7 +109,29 @@ public class Map {
         locationOverlay.enableMyLocation();
         locationOverlay.enableFollowLocation();
         mapView.getOverlays().add(locationOverlay);
+
+        return locationOverlay;
     }
+
+    public MyLocationNewOverlay returnLocation() {
+        locationOverlay = new MyLocationNewOverlay(
+                new GpsMyLocationProvider(context),
+                mapView
+        );
+
+        Drawable arrowIconDrawable = ContextCompat.getDrawable(context, R.drawable.arrow_icon);
+        if (arrowIconDrawable != null) {
+            Bitmap arrowIconBitmap = drawableToBitmap(arrowIconDrawable);
+            locationOverlay.setDirectionArrow(arrowIconBitmap, arrowIconBitmap);
+        }
+
+        locationOverlay.enableMyLocation();
+        locationOverlay.enableFollowLocation();
+        mapView.getOverlays().add(locationOverlay);
+
+        return locationOverlay;
+    }
+
 
     private Bitmap drawableToBitmap(Drawable drawable) {
         // Create a Bitmap with the same size as the drawable

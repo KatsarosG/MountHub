@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
                         .getChildFragmentManager()
                         .getFragments()
                         .get(0);  // get(0) is safe if HomeFragment is loaded first
+                
+
 
                 if (homeFragment != null) {
                     homeFragment.startAddLocationMode(); // create this method in HomeFragment
@@ -116,4 +118,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    public void goToNotifScreen(View v){
+        Intent i = new Intent(this, NotificationsActivity.class);
+        startActivity(i);
+    }
+
+    public void goToSOSScreen(View v){
+        Intent i = new Intent(this, InfoAndSafetyInstructionsScreen.class);
+        startActivity(i);
+    }
+
 }
