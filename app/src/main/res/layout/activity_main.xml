@@ -21,22 +21,15 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/searchInput"
-            android:layout_width="235dp"
+            android:layout_width="248dp"
             android:layout_height="44dp"
+            android:layout_weight="2"
             android:background="@color/white"
             android:hint="⌕ Search"
             android:includeFontPadding="true"
             android:paddingStart="15dp"
             android:textColor="@color/black"
             android:textColorHint="@android:color/darker_gray" />
-        <SearchView
-            android:id="@+id/searchView"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="3dp"
-            android:background="#FFF9F9"
-            android:visibility="visible" />
 
         <Button
             android:id="@+id/button2"
@@ -52,6 +45,7 @@
             android:layout_width="60dp"
             android:layout_height="match_parent"
             android:layout_margin="3dp"
+            android:layout_weight="1"
             android:background="@drawable/ic_launcher_foreground" />
     </LinearLayout>
 
