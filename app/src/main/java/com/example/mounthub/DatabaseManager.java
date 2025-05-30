@@ -66,8 +66,34 @@ public class DatabaseManager extends SQLiteOpenHelper {
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_USERS;
 
+    private List<Location> locations = List.of(
+            new Location(1, "Refuge A", new Coordinate(38.279, 21.776), "Refuge"),
+            new Location(2, "Spring B", new Coordinate(38.288, 21.789), "Water Source"),
+            new Location(3, "Hill C", new Coordinate(38.283, 21.795), "Mountain"),
+            new Location(4, "Camp D", new Coordinate(38.292, 21.781), "Shelter"),
+            new Location(5, "Village E", new Coordinate(38.280, 21.788), "Village"),
+            new Location(6, "Pond F", new Coordinate(38.287, 21.774), "Water Source"),
+            new Location(7, "Peak G", new Coordinate(38.282, 21.785), "Mountain"),
+            new Location(8, "Shelter H", new Coordinate(38.290, 21.792), "Shelter"),
+            new Location(9, "Refuge I", new Coordinate(38.278, 21.779), "Refuge"),
+            new Location(10, "Spring J", new Coordinate(38.289, 21.784), "Water Source"),
+            new Location(11, "Mountain K", new Coordinate(38.285, 21.780), "Mountain"),
+            new Location(12, "Village L", new Coordinate(38.281, 21.789), "Village"),
+            new Location(13, "Shelter M", new Coordinate(38.284, 21.776), "Shelter"),
+            new Location(14, "Pond N", new Coordinate(38.286, 21.787), "Water Source"),
+            new Location(15, "Refuge O", new Coordinate(38.280, 21.782), "Refuge"),
+            new Location(16, "Village P", new Coordinate(38.291, 21.779), "Village"),
+            new Location(17, "Peak Q", new Coordinate(38.283, 21.790), "Mountain"),
+            new Location(18, "Shelter R", new Coordinate(38.279, 21.783), "Shelter"),
+            new Location(19, "Spring S", new Coordinate(38.288, 21.785), "Water Source"),
+            new Location(20, "Village T", new Coordinate(38.282, 21.788), "Village"),
+            new Location(21, "Refuge U", new Coordinate(38.280, 21.777), "Refuge")
+    );
+
+
     public DatabaseManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
     }
 
     @Override
@@ -91,7 +117,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
         insertDummyUsers(db);
         insertDummyLocations(db);
-      
+
         // This method is called when the database is created for the first time.
         db.execSQL(SQL_CREATE_ENTRIES);
         db.execSQL(DUMMY_USER);
@@ -323,38 +349,38 @@ public class DatabaseManager extends SQLiteOpenHelper {
 //        SQLiteDatabase
 //    }
 public List<Location> fetchAllLocations() {
-    List<Location> locations = new ArrayList<>();
-    SQLiteDatabase db = this.getReadableDatabase();
-
-    String query = "SELECT * FROM " + TABLE_LOCATIONS;
-    Cursor cursor = null;
-
-    try {
-        cursor = db.rawQuery(query, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_LOCATION_ID));
-                String name = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_NAME));
-                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LOCATION_LATITUDE));
-                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LOCATION_LONGITUDE));
-                String description = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_DESCRIPTION));
-                String locationType = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_TYPE));
-
-                Location location = new Location(id, name, locationType, description, latitude, longitude);
-                location.setCoordinates(new Coordinate(latitude, longitude));
-                location.setDescription(description);
-
-                locations.add(location);
-            } while (cursor.moveToNext());
-        }
-    } catch (Exception e) {
-        Log.e(TAG, "fetchAllLocations failed: " + e.getMessage());
-    } finally {
-        if (cursor != null) cursor.close();
-        db.close();
-    }
+//        List<Location> locations = new ArrayList<>();
+//        SQLiteDatabase db = this.getReadableDatabase();
+//
+//        String query = "SELECT * FROM " + TABLE_LOCATIONS;
+//        Cursor cursor = null;
+//
+//        try {
+//        cursor = db.rawQuery(query, null);
+//
+//        if (cursor.moveToFirst()) {
+//            do {
+//                int id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_LOCATION_ID));
+//                String name = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_NAME));
+//                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LOCATION_LATITUDE));
+//                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LOCATION_LONGITUDE));
+//                String description = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_DESCRIPTION));
+//                String locationType = cursor.getString(cursor.getColumnIndexOrThrow(COL_LOCATION_TYPE));
+//
+//                Location location = new Location(id, name, locationType, description, latitude, longitude);
+//                location.setCoordinates(new Coordinate(latitude, longitude));
+//                location.setDescription(description);
+//
+//                locations.add(location);
+//            } while (cursor.moveToNext());
+//        }
+//    } catch (Exception e) {
+//        Log.e(TAG, "fetchAllLocations failed: " + e.getMessage());
+//    } finally {
+//        if (cursor != null) cursor.close();
+//        db.close();
+//      }
 
     return locations;
-}
+    }
 }

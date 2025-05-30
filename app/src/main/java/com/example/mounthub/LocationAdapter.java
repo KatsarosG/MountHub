@@ -61,7 +61,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         holder.locType.setImageResource(iconRes);
 
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, LocationManager.class);
+            Intent intent = new Intent(context, LocationManage.class);
             intent.putExtra("name", loc.getName());
             intent.putExtra("type", loc.getLocationType());
             if (loc.getCoordinates() != null) {
