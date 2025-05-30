@@ -98,7 +98,16 @@ public class MainActivity extends AppCompatActivity {
         recordTrailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Record trail clicked", Toast.LENGTH_SHORT).show();
+                // Use FragmentManager to get HomeFragment
+                HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.nav_host_fragment_activity_main)
+                        .getChildFragmentManager()
+                        .getFragments()
+                        .get(0);
+
+                if (homeFragment != null) {
+                    homeFragment.recordMode();
+                }
             }
         });
 
@@ -114,7 +123,18 @@ public class MainActivity extends AppCompatActivity {
         addTrailWithPinsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Add trail with pins clicked", Toast.LENGTH_SHORT).show();
+                // Use FragmentManager to get HomeFragment
+                HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.nav_host_fragment_activity_main)
+                        .getChildFragmentManager()
+                        .getFragments()
+                        .get(0);  // get(0) is safe if HomeFragment is loaded first
+
+
+
+                if (homeFragment != null) {
+                    homeFragment.startAddTrailMode(); // create this method in HomeFragment
+                }
             }
         });
     }

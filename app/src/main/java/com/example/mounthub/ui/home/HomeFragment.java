@@ -1,6 +1,6 @@
 package com.example.mounthub.ui.home;
 
-
+import com.example.mounthub.AddTrailActivity;
 import com.example.mounthub.LocationHandler;
 
 import com.example.mounthub.Coordinate;
@@ -8,6 +8,7 @@ import com.example.mounthub.DatabaseManager;
 import com.example.mounthub.Location;
 import com.example.mounthub.LocationManage;
 
+import com.example.mounthub.MainActivity;
 import com.example.mounthub.R;
 import com.example.mounthub.Trail;
 import com.example.mounthub.TrailActionsPopup;
@@ -24,13 +25,20 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
 import androidx.annotation.NonNull;
@@ -47,6 +55,8 @@ import org.osmdroid.views.MapView;
 
 import org.osmdroid.views.overlay.Marker;
 
+import org.osmdroid.views.overlay.Overlay;
+import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -64,16 +74,19 @@ public class HomeFragment extends Fragment implements MapListener {
     private Map mainMap;
     DatabaseManager databaseManager;
     boolean displayingPins = false;
-    private Button addLocationButton;
-    private boolean pinMode = false;
+    private boolean pinMode = false, editMode = false;
+    public  boolean recordMode = false;
     private LocationHandler locationHandler;
+
+    public List<GeoPoint> markedTrail = new ArrayList<>();
+    public List<Marker> trailMarkers = new ArrayList<>();
+    public List<Polyline> trailPolylines = new ArrayList<>();
+    public boolean recordPaused = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         Configuration.getInstance().load(requireContext(), PreferenceManager.getDefaultSharedPreferences(requireContext()));
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-
 
         Button buttonLayers = root.findViewById(R.id.button4);
         MapView mapView = root.findViewById(R.id.map);
@@ -111,6 +124,10 @@ public class HomeFragment extends Fragment implements MapListener {
         // put pin
         mainMap.mapView.setOnTouchListener((v, event) -> {
 //            Log.d("pinMode", String.valueOf(pinMode));
+            if (event.getAction() != MotionEvent.ACTION_DOWN) {
+                return false;
+            }
+
             if (pinMode) {
                 // Convert screen coordinates to geographic coordinates
                 GeoPoint geoPoint = (GeoPoint) mainMap.mapView.getProjection().fromPixels(
@@ -133,6 +150,37 @@ public class HomeFragment extends Fragment implements MapListener {
 
                 // Show next popup
                 locationHandler.insertPin(requireContext(), newLocPin);
+
+                return true;
+            }
+
+            if (editMode) {
+                // Convert screen coordinates to geographic coordinates
+                GeoPoint geoPoint = (GeoPoint) mainMap.mapView.getProjection().fromPixels(
+                        (int) event.getX(),
+                        (int) event.getY()
+                );
+
+
+                markedTrail.add(geoPoint);
+
+                // Create a new pin and place it on map
+                Marker newLocPin =  getTrailMarker(new Coordinate(geoPoint.getLatitude(), geoPoint.getLongitude()));
+                mainMap.mapView.getOverlays().add(newLocPin);
+
+                // make polyline and add to map
+                Polyline dynamicLine = new Polyline();
+                dynamicLine.setPoints(markedTrail);
+                dynamicLine.getOutlinePaint().setColor(Color.RED);
+                dynamicLine.getOutlinePaint().setStrokeWidth(15.0f);
+                mainMap.mapView.getOverlays().add(dynamicLine);
+
+                // Refresh the map
+                mainMap.mapView.invalidate();
+
+                // add marker and polyline to lists for later removal
+                trailMarkers.add(newLocPin);
+                trailPolylines.add(dynamicLine);
 
                 return true;
             }
@@ -236,8 +284,8 @@ public class HomeFragment extends Fragment implements MapListener {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setShape(GradientDrawable.OVAL);
         drawable.setColor(Color.BLUE);
-        drawable.setStroke(6, Color.WHITE); // White border
-        drawable.setSize(60, 60); // Size in pixels
+        drawable.setStroke(6, Color.WHITE);
+        drawable.setSize(60, 60);
 
         marker.setIcon(drawable);
         marker.setInfoWindow(new TrailActionsPopup(mainMap.mapView));
@@ -262,37 +310,6 @@ public class HomeFragment extends Fragment implements MapListener {
 
         return marker;
     }
-    private void setupMyLocationOverlay() {
-        locationOverlay = new MyLocationNewOverlay(
-                new GpsMyLocationProvider(requireContext()),
-                mapView
-        );
-        // Get the default arrow icon (Vector Drawable)
-        Drawable arrowIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.arrow_icon);
-
-        // Change its color programmatically
-        if (arrowIconDrawable != null) {
-            Bitmap arrowIconBitmap = drawableToBitmap(arrowIconDrawable);
-            locationOverlay.setDirectionArrow(arrowIconBitmap, arrowIconBitmap);  // Apply the colored arrow
-        }
-        locationOverlay.enableMyLocation();
-        locationOverlay.enableFollowLocation();
-        mapView.getOverlays().add(locationOverlay);
-    }
-
-    private Bitmap drawableToBitmap(Drawable drawable) {
-        // Create a Bitmap with the same size as the drawable
-        int width = drawable.getIntrinsicWidth();
-        int height = drawable.getIntrinsicHeight();
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-
-        // Create a Canvas and draw the drawable onto the bitmap
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
-    }
 
     public void startAddLocationMode() {
         if (!pinMode) {
@@ -301,16 +318,119 @@ public class HomeFragment extends Fragment implements MapListener {
         }
     }
 
-    private void requestPermissionsIfNecessary() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+    public void startAddTrailMode() {
+        editMode = true;
 
-            requestPermissions(
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_PERMISSIONS_REQUEST_CODE
-            );
-        } else {
-            setupMyLocationOverlay();
+        AlertDialog addTrailDialog = new AlertDialog.Builder(requireContext())
+                .setTitle("Add TrailPoints")
+                .setMessage("Plan a route by putting pins on the map")
+                .setPositiveButton("Submit", (dialog, which) -> {
+                    submitTrail();
+                    editMode = false; // exit
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    editMode = false;
+
+                    // Remove all trail polylines from map
+                    for (Polyline polyline : trailPolylines) {
+                        mainMap.mapView.getOverlays().remove(polyline);
+                    }
+
+                    // Clear the lists
+                    trailPolylines.clear();
+
+                    // Clear the trail points list
+                    markedTrail.clear();
+
+                    mainMap.mapView.invalidate();
+                })
+                .setCancelable(false) // Prevent dismissing by tapping outside
+                .show();
+
+        // Configure dialog window
+        Window window = addTrailDialog.getWindow();
+        if (window != null) {
+            // remove backdrop
+            window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+            // Make background interactable
+            window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+
+            // Position dialog at bottom of screen
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.gravity = Gravity.BOTTOM;
+            params.width = WindowManager.LayoutParams.MATCH_PARENT;
+            params.y = 50; // Add some margin from bottom
+            window.setAttributes(params);
+
         }
+    }
+
+    public void recordMode() {
+        recordMode = true;
+
+        AlertDialog addTrailDialog = new AlertDialog.Builder(requireContext())
+                .setTitle("Recording...")
+                .setMessage("Just walk🤙")
+                .setPositiveButton("Submit", (dialog, which) -> {
+                    // Handle submit action
+                    submitTrail();
+                    recordMode = false; // exit
+                })
+                .setNeutralButton(recordPaused ? "Continue" : "Paused", (dialog, which) -> {
+                    toggleRecording();
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    recordMode = false;
+
+//                    Log.d("MapUpdate", "Map zoomed. New zoom level: " + trailPolylines);
+
+                    // Remove all trail polylines from map
+                    for (Polyline polyline : trailPolylines) {
+                        mainMap.mapView.getOverlays().remove(polyline);
+                    }
+
+                    // Clear the lists
+                    trailMarkers.clear();
+                    trailPolylines.clear();
+
+                    // Clear the trail points list
+                    markedTrail.clear();
+
+                    mainMap.mapView.invalidate();
+                })
+                .setCancelable(false) // Prevent dismissing by tapping outside
+                .show();
+
+        // Configure dialog window
+        Window window = addTrailDialog.getWindow();
+        if (window != null) {
+            // remove backdrop
+            window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+            // Make background interactable
+            window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+
+            // Position dialog at bottom of screen
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.gravity = Gravity.BOTTOM;
+            params.width = WindowManager.LayoutParams.MATCH_PARENT;
+            params.y = 50; // Add some margin from bottom
+            window.setAttributes(params);
+
+        }
+    }
+
+    private void toggleRecording() {
+        recordMode = !recordMode;
+    }
+
+    private void submitTrail() {
+        Intent intentObj = new Intent(requireContext(), AddTrailActivity.class);
+        intentObj.putParcelableArrayListExtra("route", (ArrayList<GeoPoint>) markedTrail);
+
+        startActivity(intentObj);
     }
 }
